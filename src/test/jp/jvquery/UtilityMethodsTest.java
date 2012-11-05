@@ -12,6 +12,26 @@ import org.junit.*;
 public class UtilityMethodsTest {
 
     @Test
+    public void $listTest() {
+	List<String> list = $.list("あ", "い", "う");
+	assertThat(list, is($.list("あ", "い", "う")));
+    }
+    
+    @Test
+    public void $listTest_Empty() {
+	List<String> list = $.list();
+	assertThat(list.isEmpty(), is(true));
+    }
+
+    @Test
+    public void $listTest_Null() {
+	List<String> list = $.list((String)null);
+	assertThat(list.isEmpty(), is(false));
+	assertThat(list.size(), is(1));
+	assertThat(list.get(0), is(nullValue()));
+    }
+
+    @Test
     public void $sizeTest() {
 	List<String> list = new ArrayList<String>();
 	list.add("a");

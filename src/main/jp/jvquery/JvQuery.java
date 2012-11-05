@@ -9,6 +9,10 @@ public class JvQuery {
     }
     
     public static class $ {
+	@SafeVarargs
+	public static <T> List<T> list(T... ts) {
+	    return Arrays.asList(ts);
+	}
 	public static int size(List<?> list) {
 	    return list == null ? 0 : list.size();
 	}
