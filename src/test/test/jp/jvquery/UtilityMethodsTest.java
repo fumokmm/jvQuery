@@ -1,11 +1,11 @@
-package jp.jvquery;
+package test.jp.jvquery;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.*;
 
-import jp.jvquery.JvQuery.$;
+import static jp.jvquery.JvQuery.$;
 
 import org.junit.*;
 
@@ -21,14 +21,6 @@ public class UtilityMethodsTest {
     public void $listTest_Empty() {
 	List<String> list = $.list();
 	assertThat(list.isEmpty(), is(true));
-    }
-
-    @Test
-    public void $listTest_Null() {
-	List<String> list = $.list((String)null);
-	assertThat(list.isEmpty(), is(false));
-	assertThat(list.size(), is(1));
-	assertThat(list.get(0), is(nullValue()));
     }
 
     @Test
@@ -50,27 +42,6 @@ public class UtilityMethodsTest {
     public void $sizeTest_Null() {
 	List<String> list = null;
 	assertThat($.size(list), is(0));
-    }
-
-    @Test
-    public void $lengthTest() {
-	List<String> list = new ArrayList<String>();
-	list.add("a");
-	list.add("b");
-	list.add("c");
-	assertThat($.length(list), is(3));
-    }
-    
-    @Test
-    public void $lengthTest_Empty() {
-	List<String> list = new ArrayList<String>();
-	assertThat($.length(list), is(0));
-    }
-
-    @Test
-    public void $lengthTest_Null() {
-	List<String> list = null;
-	assertThat($.length(list), is(0));
     }
 
     @Test
