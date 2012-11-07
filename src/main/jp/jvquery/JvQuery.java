@@ -78,6 +78,15 @@ public class JvQuery {
     }
 
     /**
+     * 指定した値のラッピングし、オプション型を返却します。
+     * @param t 値
+     * @return オプション型
+     */
+    public <T> Option<T> option(T t) {
+	return t == null ? new None<T>() : new Some<T>(t);
+    }
+    
+    /**
      * Queryインタフェース
      * @author fumokmm
      */
@@ -251,4 +260,66 @@ public class JvQuery {
     public static interface Conv3<A1, A2, A3, R> {
 	public R convert(A1 a1, A2 a2, A3 a3);
     }
+    
+    /**
+     * 選択的な値を表すクラス。
+     * インスタンスは以下の二種類のみ。
+     *  - Some<T> 値が存在する
+     *  - None<T> 値が存在しない
+     * @param <T> 値の型
+     * @author fumokmm
+     */
+    public static abstract class Option<T> {
+	/** パッケージプライベートコンストラクタ */
+	private Option(){}
+
+	/** @return 値があるかどうか */
+	public abstract boolean hasValue();
+	
+	/**
+	 * 値を取得します。
+	 * もし、値がない場合(#hasValueの値がfalseの場合)は、IllegalStateExceptionが発生します。
+	 * @return 値
+	 * @throws IllegalStateException
+	 */
+	public abstract T get();
+	
+	/**
+	 * 値を取得します。
+	 * もし、値がない場合(#hasValueの値がfalseの場合)は、代替の値が返却されます。
+	 * @param alt 代替の値
+	 * @return 値
+	 */
+	public T getOrElse(T alt) {
+	    return hasValue() ? get() : alt;
+	}
+    }
+    
+    private static class Some<T> extends Option<T> {
+	private T t;
+	private Some(T t) {
+	    this.t = t;
+	}
+	@Override
+	public boolean hasValue() {
+	    return true;
+	}
+	@Override
+	public T get() {
+	    return t;
+	}
+    }
+    
+    private static class None<T> extends Option<T> {
+	private None() {}
+	@Override
+	public boolean hasValue() {
+	    return false;
+	}
+	@Override
+	public T get() {
+	    throw new UnsupportedOperationException("値がありません。");
+	}
+    }
+    
 }
