@@ -64,4 +64,23 @@ public class UtilityMethodsTest {
 	List<String> list = null;
 	assertThat($.isEmpty(list), is(true));
     }
+    
+    @Test
+    public void $optionのテスト_値あり_Some() {
+	assertThat($.option(1).hasValue(),	is(true));
+	assertThat($.option(1).get(),		is(1));
+	assertThat($.option(1).getOrElse(2),	is(1));
+    }
+
+    @Test
+    public void $optionのテスト_値なし_None() {
+	assertThat($.option(null).hasValue(),			is(false));
+	try {
+	    $.option((Integer) null).get();
+	    fail();
+	} catch (UnsupportedOperationException e) {
+	    assertThat(e.getMessage(), is("値がありません。"));
+	}
+	assertThat($.option((Integer) null).getOrElse(2),	is(2));
+    }
 }
