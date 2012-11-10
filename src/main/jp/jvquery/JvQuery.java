@@ -17,6 +17,8 @@ public class JvQuery {
     }
     private JvQuery() {}
 
+    // ---------------------------------------------------
+
     /**
      * リストを引数としてクエリを生成します。
      * @param list リスト
@@ -35,12 +37,30 @@ public class JvQuery {
 	return JvQuery.jvQuery(list);
     }
 
+    // ---------------------------------------------------
+
     /**
-     * 空リストを生成します。
+     * 空リストを生成します。(ArrayList)
      * @return 空リスト
      */
     public <T> List<T> list() {
+	return arrayList();
+    }
+    
+    /**
+     * ArrayListの空リストを生成します。
+     * @return 空リスト
+     */
+    public <T> List<T> arrayList() {
 	return new ArrayList<T>();
+    }
+    
+    /**
+     * LinkedListの空リストを生成します。
+     * @return 空リスト
+     */
+    public <T> List<T> linkedList() {
+	return new LinkedList<T>();
     }
     
     /**
@@ -49,10 +69,11 @@ public class JvQuery {
      * @return リスト
      */
     public <T> List<T> list(T t, @SuppressWarnings("unchecked") T... ts) {
-	List<T> result = new ArrayList<T>();
+	List<T> result = list();
 	if (t == null && ts == null) {
 	    return result;
 	}
+	result.add(t);
 	for (T t1 : ts) {
 	    result.add(t1);
 	}
@@ -85,6 +106,62 @@ public class JvQuery {
     public <T> Option<T> option(T t) {
 	return t == null ? new None<T>() : new Some<T>(t);
     }
+
+    /**
+     * 範囲の整数リスト(start 〜 end)を生成して返却します。
+     * <ul>
+     * <li>終了値が開始値より小さい場合、逆順のリストを返却します。
+     * </ul>
+     * @param start 開始値
+     * @param end 終了値
+     * @return 整数リスト(start 〜 end)
+     */
+    public List<Integer> range(int start, int end) {
+	List<Integer> result = list();
+	if (start <= end) {
+	    // 正順
+	    for (int i = start; i <= end; i++) {
+		result.add(i);
+	    }
+	} else {
+	    // 逆順
+	    for (int i = start; i >= end; i--) {
+		result.add(i);
+	    }
+	}
+	return result;
+    }
+
+    /**
+     * 範囲の整数リスト(0から始まる指定の要素サイズ分)を生成して返却します。
+     * <ul>
+     * <li>開始値は0からとなります。
+     * <li>要素サイズが0以下の場合、空リストを返却します。
+     * </ul>
+     * @param size 要素サイズ
+     * @return 整数リスト(0 〜 size - 1)
+     */
+    public List<Integer> rangeBySize(int size) {
+	return rangeBySize(0, size);
+    }
+
+    /**
+     * 範囲の整数リスト(startから始まる指定の要素サイズ分)を生成して返却します。
+     * <ul>
+     * <li>指定の要素サイズが0以下の場合、空リストを返却します。
+     * </ul>
+     * @param start 開始値
+     * @param size 要素サイズ
+     * @return 整数リスト(start 〜 start + size - 1)
+     */
+    public List<Integer> rangeBySize(int start, int size) {
+	if (size <= 0) {
+	    return list();
+	}
+	return range(start, start + size - 1);
+    }
+
+    // ---------------------------------------------------
     
     /**
      * Queryインタフェース
@@ -134,6 +211,11 @@ public class JvQuery {
 	public boolean isEmpty() {
 	    return size() < 1;
 	}
+	
+	public abstract ListQuery<ITEM> eq(int index);
+	public abstract ListQuery<ITEM> lt(int index);
+	public abstract ListQuery<ITEM> gt(int index);
+
     }
 
     /**
@@ -144,7 +226,7 @@ public class JvQuery {
     public static class ListQuery<T> extends AbstractQuery<List<T>, T> {
 	private List<T> list;
 
-	ListQuery(List<T> list) {
+	private ListQuery(List<T> list) {
 	    this.list = list;
 	}
 
@@ -183,15 +265,17 @@ public class JvQuery {
 	}
 
 	public List<T> get() {
+	    if (jvQuery.isEmpty(list)) {
+		return jvQuery.list();
+	    }
 	    return list;
 	}
 
-	public T get(int index) {
+	public Option<T> get(int index) {
 	    if (0 <= index && index < jvQuery.size(list)) {
-		return list.get(index);
+		return jvQuery.option(list.get(index));
 	    } else {
-		// TODO あとでOption<T>型にする
-		return null;
+		return jvQuery.option(null);
 	    }
 	}
 
@@ -199,8 +283,28 @@ public class JvQuery {
 	public int size() {
 	    return jvQuery.size(list);
 	}
+
+	@Override
+	public ListQuery<T> eq(int index) {
+	    Option<T> result = get(index);
+	    return jvQuery(jvQuery.list(result.hasValue() ? result.get() : (T) null));
+	}
+
+	@Override
+	public ListQuery<T> lt(int index) {
+	    // TODO 実装
+	    return null;
+	}
+
+	@Override
+	public ListQuery<T> gt(int index) {
+	    // TODO 実装
+	    return null;
+	}
     }
     
+    // ---------------------------------------------------
+
     public static interface Act<A> extends Act1<A> {
     }
 
@@ -261,6 +365,8 @@ public class JvQuery {
 	public R convert(A1 a1, A2 a2, A3 a3);
     }
     
+    // ---------------------------------------------------
+
     /**
      * 選択的な値を表すクラス。
      * インスタンスは以下の二種類のみ。
@@ -321,5 +427,7 @@ public class JvQuery {
 	    throw new UnsupportedOperationException("値がありません。");
 	}
     }
+
+    // ---------------------------------------------------
     
 }
