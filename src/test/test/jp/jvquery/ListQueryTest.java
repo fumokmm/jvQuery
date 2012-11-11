@@ -131,4 +131,24 @@ public class ListQueryTest {
 	assertThat($(nums).gt(5).isEmpty(), is(true));
 	assertThat($(nums).gt(6).isEmpty(), is(true));
     }
+
+    @Test
+    public void firstのテスト() {
+	List<Integer> num = $.list(10);
+	List<Integer> nums5 = $.list(100, 200, 300, 400, 500);
+	List<Integer> 空リスト = $.list();
+	assertThat($(num).first().get(0).get(), is(10));
+	assertThat($(nums5).first().get(0).get(), is(100));
+	assertThat($(空リスト).first().get(0).hasValue(), is(false));
+    }
+
+    @Test
+    public void lastのテスト() {
+	List<Integer> num = $.list(10);
+	List<Integer> nums5 = $.list(100, 200, 300, 400, 500);
+	List<Integer> 空リスト = $.list();
+	assertThat($(num).last().get(0).get(), is(10));
+	assertThat($(nums5).last().get(0).get(), is(500));
+	assertThat($(空リスト).last().get(0).hasValue(), is(false));
+    }
 }

@@ -224,10 +224,43 @@ public class JvQuery {
 	    return size() < 1;
 	}
 	
+	/**
+	 * 指定したインデックスの要素のみを抽出します。
+	 * インデックスが範囲外の場合、空となります。
+	 * @param index インデックス
+	 * @return クエリオブジェクト
+	 */
 	public abstract ListQuery<ITEM> eq(int index);
-	public abstract ListQuery<ITEM> lt(int index);
-	public abstract ListQuery<ITEM> gt(int index);
 
+	/**
+	 * 指定したインデックスよりも大きな要素を抽出します。
+	 * @param index インデックス
+	 * @return クエリオブジェクト
+	 */
+	public abstract ListQuery<ITEM> lt(int index);
+
+	/**
+	 * 指定したインデックスよりも小さな要素を抽出します。
+	 * @param index インデックス
+	 * @return クエリオブジェクト
+	 */
+	public abstract ListQuery<ITEM> gt(int index);
+	
+	/**
+	 * 最初の要素を抽出します。
+	 * @return クエリオブジェクト
+	 */
+	public ListQuery<ITEM> first() {
+	    return eq(0);
+	}
+
+	/**
+	 * 最後の要素を抽出します。
+	 * @return クエリオブジェクト
+	 */
+	public ListQuery<ITEM> last() {
+	    return eq(size() - 1);
+	}
     }
 
     /**
