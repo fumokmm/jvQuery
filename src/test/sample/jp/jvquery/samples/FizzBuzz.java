@@ -1,0 +1,23 @@
+package sample.jp.jvquery.samples;
+
+import static jp.jvquery.JvQuery.*;
+
+/**
+ * 1から100までのFizzBuzzのサンプルです。
+ */
+public class FizzBuzz {
+    public static void main(String[] args) {
+	$($.range(1, 100)).map(new Conv<Integer, String>(){
+	    @Override public String convert(Integer a1) {
+		return a1 % 15 == 0 ? "FizzBuzz" :
+		       a1 % 5  == 0 ? "Buzz"     :
+		       a1 % 3  == 0 ? "Fizz"     :
+		       String.valueOf(a1);
+	    }
+	}).each(new Act<String>(){
+	    @Override public void run(String a1) {
+		System.out.println(a1);
+	    }
+	});
+    }
+}
