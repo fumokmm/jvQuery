@@ -48,6 +48,23 @@ public class JvQuery {
     }
     
     /**
+     * 指定された内容でリストを生成します。
+     * @param ts リストの内容
+     * @return リスト
+     */
+    public <T> List<T> list(T t, @SuppressWarnings("unchecked") T... ts) {
+        List<T> result = list();
+        if (t == null && ts == null) {
+            return result;
+        }
+        result.add(t);
+        for (T t1 : ts) {
+            result.add(t1);
+        }
+        return result;
+    }
+
+    /**
      * ArrayListの空リストを生成します。
      * @return 空リスト
      */
@@ -63,23 +80,18 @@ public class JvQuery {
 	return new LinkedList<T>();
     }
     
-    /**
-     * 指定された内容でリストを生成します。
-     * @param ts リストの内容
-     * @return リスト
-     */
-    public <T> List<T> list(T t, @SuppressWarnings("unchecked") T... ts) {
-	List<T> result = list();
-	if (t == null && ts == null) {
-	    return result;
-	}
-	result.add(t);
-	for (T t1 : ts) {
-	    result.add(t1);
-	}
-	return result;
+    public <T> T[] array(@SuppressWarnings("unchecked") T... ts) {
+        return ts;
     }
 
+    public <T> T nth(List<T> list, int index) {
+	return list.get(index);
+    }
+
+    public <T> T nth(T[] array, int index) {
+	return array[index];
+    }
+    
     /**
      * リストのサイズを取得します。
      * @param list リスト
@@ -240,6 +252,17 @@ public class JvQuery {
 	    return this;
 	}
 
+	public ListQuery<T> each(Act2<T, Integer> act) {
+	    if (jvQuery.isEmpty(list) || act == null) {
+		return this;
+	    }
+	    for (int index = 0; index < list.size(); index++) {
+		T t = jvQuery.nth(list, index);
+		act.run(t, index);
+	    }
+	    return this;
+	}
+
 	public <R> ListQuery<R> map(Conv<T, R> conv) {
 	    List<R> result = jvQuery.list();
 	    if (jvQuery.isEmpty(list) || conv == null) {
@@ -247,6 +270,18 @@ public class JvQuery {
 	    }
 	    for (T t : list) {
 		result.add(conv.convert(t));
+	    }
+	    return jvQuery(result);
+	}
+
+	public <R> ListQuery<R> map(Conv2<T, Integer, R> conv) {
+	    List<R> result = jvQuery.list();
+	    if (jvQuery.isEmpty(list) || conv == null) {
+		return jvQuery(result);
+	    }
+	    for (int index = 0; index < list.size(); index++) {
+		T t = jvQuery.nth(list, index);
+		result.add(conv.convert(t, index));
 	    }
 	    return jvQuery(result);
 	}
@@ -262,6 +297,28 @@ public class JvQuery {
 		}
 	    }
 	    return jvQuery(result);
+	}
+
+	public ListQuery<T> filter(Pred2<T, Integer> pred) {
+	    if (jvQuery.isEmpty(list) || pred == null) {
+		return this;
+	    }
+	    List<T> result = jvQuery.list();
+	    for (int index = 0; index < list.size(); index++) {
+		T t = jvQuery.nth(list, index);
+		if (pred.is(t, index)) {
+		    result.add(t);
+		}
+	    }
+	    return jvQuery(result);
+	}
+
+	public ListQuery<T> filter(Filter filter) {
+	    if (jvQuery.isEmpty(list) || filter == null || filter.getFilter() == null) {
+		return this;
+	    }
+	    Pred2<T, Integer> fil = filter.getFilter();
+	    return filter(fil);
 	}
 
 	public List<T> get() {
@@ -286,20 +343,38 @@ public class JvQuery {
 
 	@Override
 	public ListQuery<T> eq(int index) {
-	    Option<T> result = get(index);
-	    return jvQuery(jvQuery.list(result.hasValue() ? result.get() : (T) null));
+	    Option<T> resultItem = get(index);
+	    if (resultItem.hasValue()) {
+		T t = resultItem.get();
+		@SuppressWarnings("unchecked")
+		List<T> result = jvQuery.list(t);
+		return jvQuery(result);
+	    } else {
+		List<T> result = jvQuery.list();
+		return jvQuery(result);
+	    }
 	}
 
 	@Override
 	public ListQuery<T> lt(int index) {
-	    // TODO 実装
-	    return null;
+	    final int idx = index;
+	    return filter(new Pred2<T, Integer>(){
+		@Override
+		public boolean is(T t, Integer tIdx) {
+		    return tIdx < idx;
+		}
+	    });
 	}
 
 	@Override
 	public ListQuery<T> gt(int index) {
-	    // TODO 実装
-	    return null;
+	    final int idx = index;
+	    return filter(new Pred2<T, Integer>(){
+		@Override
+		public boolean is(T t, Integer tIdx) {
+		    return tIdx > idx;
+		}
+	    });
 	}
     }
     
@@ -363,6 +438,39 @@ public class JvQuery {
 
     public static interface Conv3<A1, A2, A3, R> {
 	public R convert(A1 a1, A2 a2, A3 a3);
+    }
+    
+    public static interface Filter {
+	public <T> Pred2<T, Integer> getFilter();
+    }
+
+    public static enum IndexIs implements Filter {
+	/** 偶数 */
+	even {
+	    @Override
+	    public <T> Pred2<T, Integer> getFilter() {
+		return new Pred2<T, Integer>() {
+		    @Override
+		    public boolean is(T t, Integer idx) {
+			return idx % 2 == 0;
+		    }
+		};
+	    }
+	},
+
+	/** 奇数 */
+	odd {
+	    @Override
+	    public <T> Pred2<T, Integer> getFilter() {
+		return new Pred2<T, Integer>() {
+		    @Override
+		    public boolean is(T t, Integer idx) {
+			return idx % 2 == 1;
+		    }
+		};
+	    }
+	},
+	;
     }
     
     // ---------------------------------------------------

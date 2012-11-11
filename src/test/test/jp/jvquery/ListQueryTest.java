@@ -52,6 +52,33 @@ public class ListQueryTest {
     }
     
     @Test
+    public void filterのテスト() {
+	List<String> strList = $.list("a", "b", "c");
+	List<String> expected = $.list("a", "c");
+	assertThat($(strList).filter(new Pred<String>(){
+	    @Override
+	    public boolean is(String a1) {
+		return ! a1.equals("b");
+	    }
+	}).get(), is(expected));
+    }
+    
+    @Test
+    public void filterのテスト_IndexIs() {
+	List<String> strList = $.list("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
+	assertThat("偶数(even)",
+	    $(strList).filter(IndexIs.even).get(), is(
+	        $.list("a", "c", "e", "g", "i")
+	    )
+	);
+	assertThat("奇数(odd)",
+	    $(strList).filter(IndexIs.odd).get(), is(
+		$.list("b", "d", "f", "h", "j")
+	    )
+	);
+    }
+    
+    @Test
     public void mapTest() {
 	List<Integer> nums = $.list(1, 2, 3);
 	assertThat($(nums).map(new Conv<Integer, String>(){
@@ -64,5 +91,44 @@ public class ListQueryTest {
 		return sb.toString();
 	    }
 	}).get(), is($.list("1", "22", "333")));
+    }
+    
+    @Test
+    public void eqのテスト() {
+	List<Integer> nums = $.list(100, 200, 300, 400, 500);
+	assertThat($(nums).eq(-1).isEmpty(), is(true));
+	assertThat($(nums).eq(0).get(0).get(), is(100));
+	assertThat($(nums).eq(1).get(0).get(), is(200));
+	assertThat($(nums).eq(2).get(0).get(), is(300));
+	assertThat($(nums).eq(3).get(0).get(), is(400));	
+	assertThat($(nums).eq(4).get(0).get(), is(500));
+	assertThat($(nums).eq(5).isEmpty(), is(true));
+	assertThat($(nums).eq(6).isEmpty(), is(true));
+    }
+
+    @Test
+    public void ltのテスト() {
+	List<Integer> nums = $.list(100, 200, 300, 400, 500);
+	assertThat($(nums).lt(-1).isEmpty(), is(true));
+	assertThat($(nums).lt(0).isEmpty(), is(true));
+	assertThat($(nums).lt(1).get(), is($.list(100)));
+	assertThat($(nums).lt(2).get(), is($.list(100, 200)));
+	assertThat($(nums).lt(3).get(), is($.list(100, 200, 300)));
+	assertThat($(nums).lt(4).get(), is($.list(100, 200, 300, 400)));
+	assertThat($(nums).lt(5).get(), is($.list(100, 200, 300, 400, 500)));
+	assertThat($(nums).lt(6).get(), is($.list(100, 200, 300, 400, 500)));
+    }
+
+    @Test
+    public void gtのテスト() {
+	List<Integer> nums = $.list(100, 200, 300, 400, 500);
+	assertThat($(nums).gt(-1).get(), is($.list(100, 200, 300, 400, 500)));
+	assertThat($(nums).gt(0).get(), is($.list(200, 300, 400, 500)));
+	assertThat($(nums).gt(1).get(), is($.list(300, 400, 500)));
+	assertThat($(nums).gt(2).get(), is($.list(400, 500)));
+	assertThat($(nums).gt(3).get(), is($.list(500)));
+	assertThat($(nums).gt(4).isEmpty(), is(true));
+	assertThat($(nums).gt(5).isEmpty(), is(true));
+	assertThat($(nums).gt(6).isEmpty(), is(true));
     }
 }
