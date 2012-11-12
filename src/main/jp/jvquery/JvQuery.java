@@ -361,12 +361,12 @@ public class JvQuery {
 	    return list;
 	}
 
-	public Option<T> get(int index) {
-	    if (0 <= index && index < jvQuery.size(list)) {
-		return jvQuery.option(list.get(index));
-	    } else {
-		return jvQuery.option(null);
-	    }
+	public T get(int index) {
+	    return 0 <= index && index < jvQuery.size(list) ? list.get(index) : null;
+	}
+
+	public Option<T> getOption(int index) {
+	    return jvQuery.option(get(index));
 	}
 
 	@Override
@@ -376,7 +376,7 @@ public class JvQuery {
 
 	@Override
 	public ListQuery<T> eq(int index) {
-	    Option<T> resultItem = get(index);
+	    Option<T> resultItem = getOption(index);
 	    if (resultItem.hasValue()) {
 		T t = resultItem.get();
 		@SuppressWarnings("unchecked")

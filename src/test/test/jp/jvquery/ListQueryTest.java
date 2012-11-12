@@ -97,11 +97,11 @@ public class ListQueryTest {
     public void eqのテスト() {
 	List<Integer> nums = $.list(100, 200, 300, 400, 500);
 	assertThat($(nums).eq(-1).isEmpty(), is(true));
-	assertThat($(nums).eq(0).get(0).get(), is(100));
-	assertThat($(nums).eq(1).get(0).get(), is(200));
-	assertThat($(nums).eq(2).get(0).get(), is(300));
-	assertThat($(nums).eq(3).get(0).get(), is(400));	
-	assertThat($(nums).eq(4).get(0).get(), is(500));
+	assertThat($(nums).eq(0).getOption(0).get(), is(100));
+	assertThat($(nums).eq(1).getOption(0).get(), is(200));
+	assertThat($(nums).eq(2).getOption(0).get(), is(300));
+	assertThat($(nums).eq(3).getOption(0).get(), is(400));	
+	assertThat($(nums).eq(4).getOption(0).get(), is(500));
 	assertThat($(nums).eq(5).isEmpty(), is(true));
 	assertThat($(nums).eq(6).isEmpty(), is(true));
     }
@@ -137,9 +137,9 @@ public class ListQueryTest {
 	List<Integer> num = $.list(10);
 	List<Integer> nums5 = $.list(100, 200, 300, 400, 500);
 	List<Integer> 空リスト = $.list();
-	assertThat($(num).first().get(0).get(), is(10));
-	assertThat($(nums5).first().get(0).get(), is(100));
-	assertThat($(空リスト).first().get(0).hasValue(), is(false));
+	assertThat($(num).first().getOption(0).get(), is(10));
+	assertThat($(nums5).first().getOption(0).get(), is(100));
+	assertThat($(空リスト).first().getOption(0).hasValue(), is(false));
     }
 
     @Test
@@ -147,8 +147,75 @@ public class ListQueryTest {
 	List<Integer> num = $.list(10);
 	List<Integer> nums5 = $.list(100, 200, 300, 400, 500);
 	List<Integer> 空リスト = $.list();
-	assertThat($(num).last().get(0).get(), is(10));
-	assertThat($(nums5).last().get(0).get(), is(500));
-	assertThat($(空リスト).last().get(0).hasValue(), is(false));
+	assertThat($(num).last().getOption(0).get(), is(10));
+	assertThat($(nums5).last().getOption(0).get(), is(500));
+	assertThat($(空リスト).last().getOption(0).hasValue(), is(false));
+    }
+    
+    @Test
+    public void getのテスト() {
+	assertThat($(null).get(), is($.list()));
+	assertThat($($.list()).get(), is($.list()));
+	assertThat($($.list(1)).get(), is($.list(1)));
+	assertThat($($.list(1, 2)).get(), is($.list(1, 2)));
+	assertThat($($.list(1, 2, 3)).get(), is($.list(1, 2, 3)));
+    }
+
+    @Test
+    public void getのテスト_index() {
+	assertThat($(null).get(-1), is(nullValue()));
+	assertThat($(null).get(0), is(nullValue()));
+	assertThat($(null).get(1), is(nullValue()));
+
+	assertThat($($.list()).get(-1), is(nullValue()));
+	assertThat($($.list()).get(0), is(nullValue()));
+	assertThat($($.list()).get(1), is(nullValue()));
+	
+	assertThat($($.list(1)).get(-1), is(nullValue()));
+	assertThat($($.list(1)).get(0), is(1));
+	assertThat($($.list(1)).get(1), is(nullValue()));
+
+	assertThat($($.list(1, 2)).get(-1), is(nullValue()));
+	assertThat($($.list(1, 2)).get(0), is(1));
+	assertThat($($.list(1, 2)).get(1), is(2));
+	assertThat($($.list(1, 2)).get(2), is(nullValue()));
+
+	assertThat($($.list(1, 2, 3)).get(-1), is(nullValue()));
+	assertThat($($.list(1, 2, 3)).get(0), is(1));
+	assertThat($($.list(1, 2, 3)).get(1), is(2));
+	assertThat($($.list(1, 2, 3)).get(2), is(3));
+	assertThat($($.list(1, 2, 3)).get(3), is(nullValue()));
+    }
+
+    @Test
+    public void getOptionのテスト() {
+	assertThat($(null).getOption(-1).hasValue(), is(false));
+	assertThat($(null).getOption(0).hasValue(), is(false));
+	assertThat($(null).getOption(1).hasValue(), is(false));
+
+	assertThat($($.list()).getOption(-1).hasValue(), is(false));
+	assertThat($($.list()).getOption(0).hasValue(), is(false));
+	assertThat($($.list()).getOption(1).hasValue(), is(false));
+	
+	assertThat($($.list(1)).getOption(-1).hasValue(), is(false));
+	assertThat($($.list(1)).getOption(0).hasValue(), is(true));
+	assertThat($($.list(1)).getOption(0).get(), is(1));
+	assertThat($($.list(1)).getOption(1).hasValue(), is(false));
+
+	assertThat($($.list(1, 2)).getOption(-1).hasValue(), is(false));
+	assertThat($($.list(1, 2)).getOption(0).hasValue(), is(true));
+	assertThat($($.list(1, 2)).getOption(0).get(), is(1));
+	assertThat($($.list(1, 2)).getOption(1).hasValue(), is(true));
+	assertThat($($.list(1, 2)).getOption(1).get(), is(2));
+	assertThat($($.list(1, 2)).getOption(2).hasValue(), is(false));
+
+	assertThat($($.list(1, 2, 3)).getOption(-1).hasValue(), is(false));
+	assertThat($($.list(1, 2, 3)).getOption(0).hasValue(), is(true));
+	assertThat($($.list(1, 2, 3)).getOption(0).get(), is(1));
+	assertThat($($.list(1, 2, 3)).getOption(1).hasValue(), is(true));
+	assertThat($($.list(1, 2, 3)).getOption(1).get(), is(2));
+	assertThat($($.list(1, 2, 3)).getOption(2).hasValue(), is(true));
+	assertThat($($.list(1, 2, 3)).getOption(2).get(), is(3));
+	assertThat($($.list(1, 2, 3)).getOption(3).hasValue(), is(false));
     }
 }
