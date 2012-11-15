@@ -79,6 +79,17 @@ public class ListQueryTest {
     }
     
     @Test
+    public void foldLeftのテスト() {
+	List<Integer> nums = $.range(1, 10);
+	assertThat($(nums).foldLeft(0, new Func2<Integer, Integer, Integer>(){
+	    @Override
+	    public Integer call(Integer result, Integer num) {
+		return result + num;
+	    }
+	}).get(0), is(55));
+    }
+    
+    @Test
     public void mapTest() {
 	List<Integer> nums = $.list(1, 2, 3);
 	assertThat($(nums).map(new Conv<Integer, String>(){

@@ -6,13 +6,13 @@ import java.util.*;
  * jvQuery
  * @author fumokmm
  */
-public class JvQuery {
+public final class JvQuery {
     /** jvQueryインスタンス */
     public static final JvQuery jvQuery = Holder.instance;
     /** jvQueryの別名「$」 */
     public static final JvQuery $ = Holder.instance;
 
-    private static class Holder {
+    private static final class Holder {
 	public static final JvQuery instance = new JvQuery();
     }
     private JvQuery() {}
@@ -24,7 +24,7 @@ public class JvQuery {
      * @param list リスト
      * @return クエリ
      */
-    public static <T> ListQuery<T> jvQuery(List<T> list) {
+    public static final <T> ListQuery<T> jvQuery(List<T> list) {
 	return new ListQuery<T>(list);
     }
 
@@ -33,7 +33,7 @@ public class JvQuery {
      * @param list リスト
      * @return クエリ
      */
-    public static <T> ListQuery<T> $(List<T> list) {
+    public static final <T> ListQuery<T> $(List<T> list) {
 	return JvQuery.jvQuery(list);
     }
 
@@ -43,7 +43,7 @@ public class JvQuery {
      * 空リストを生成します。(ArrayList)
      * @return 空リスト
      */
-    public <T> List<T> list() {
+    public final <T> List<T> list() {
 	return arrayList();
     }
     
@@ -52,7 +52,8 @@ public class JvQuery {
      * @param ts リストの内容
      * @return リスト
      */
-    public <T> List<T> list(T t, @SuppressWarnings("unchecked") T... ts) {
+    @SafeVarargs
+    public final <T> List<T> list(T t, T... ts) {
         List<T> result = list();
         if (t == null && ts == null) {
             return result;
@@ -68,7 +69,7 @@ public class JvQuery {
      * ArrayListの空リストを生成します。
      * @return 空リスト
      */
-    public <T> List<T> arrayList() {
+    public final <T> List<T> arrayList() {
 	return new ArrayList<T>();
     }
     
@@ -76,19 +77,19 @@ public class JvQuery {
      * LinkedListの空リストを生成します。
      * @return 空リスト
      */
-    public <T> List<T> linkedList() {
+    public final <T> List<T> linkedList() {
 	return new LinkedList<T>();
     }
     
-    public <T> T[] array(@SuppressWarnings("unchecked") T... ts) {
+    public final <T> T[] array(@SuppressWarnings("unchecked") T... ts) {
         return ts;
     }
 
-    public <T> T nth(List<T> list, int index) {
+    public final <T> T nth(List<T> list, int index) {
 	return list.get(index);
     }
 
-    public <T> T nth(T[] array, int index) {
+    public final <T> T nth(T[] array, int index) {
 	return array[index];
     }
     
@@ -97,7 +98,7 @@ public class JvQuery {
      * @param list リスト
      * @return リストのサイズ
      */
-    public int size(List<?> list) {
+    public final int size(List<?> list) {
 	return list == null ? 0 : list.size();
     }
     
@@ -106,7 +107,7 @@ public class JvQuery {
      * @param list リスト
      * @return 空の場合true, でなければfalse
      */
-    public boolean isEmpty(List<?> list) {
+    public final boolean isEmpty(List<?> list) {
 	return size(list) < 1;
     }
 
@@ -115,7 +116,7 @@ public class JvQuery {
      * @param t 値
      * @return オプション型
      */
-    public <T> Option<T> option(T t) {
+    public final <T> Option<T> option(T t) {
 	return t == null ? new None<T>() : new Some<T>(t);
     }
 
@@ -128,7 +129,7 @@ public class JvQuery {
      * @param end 終了値
      * @return 整数リスト(start 〜 end)
      */
-    public List<Integer> range(int start, int end) {
+    public final List<Integer> range(int start, int end) {
 	List<Integer> result = list();
 	if (start <= end) {
 	    // 正順
@@ -153,7 +154,7 @@ public class JvQuery {
      * @param size 要素サイズ
      * @return 整数リスト(0 〜 size - 1)
      */
-    public List<Integer> rangeBySize(int size) {
+    public final List<Integer> rangeBySize(int size) {
 	return rangeBySize(0, size);
     }
 
@@ -166,7 +167,7 @@ public class JvQuery {
      * @param size 要素サイズ
      * @return 整数リスト(start 〜 start + size - 1)
      */
-    public List<Integer> rangeBySize(int start, int size) {
+    public final List<Integer> rangeBySize(int start, int size) {
 	if (size <= 0) {
 	    return list();
 	}
@@ -211,7 +212,7 @@ public class JvQuery {
 	 * @return 長さ
 	 */
 	@Override
-	public int length() {
+	public final int length() {
 	    return size();
 	}
 
@@ -220,7 +221,7 @@ public class JvQuery {
 	 * @return 空かどうか
 	 */
 	@Override
-	public boolean isEmpty() {
+	public final boolean isEmpty() {
 	    return size() < 1;
 	}
 	
@@ -250,7 +251,7 @@ public class JvQuery {
 	 * 最初の要素を抽出します。
 	 * @return クエリオブジェクト
 	 */
-	public ListQuery<ITEM> first() {
+	public final ListQuery<ITEM> first() {
 	    return eq(0);
 	}
 
@@ -258,7 +259,7 @@ public class JvQuery {
 	 * 最後の要素を抽出します。
 	 * @return クエリオブジェクト
 	 */
-	public ListQuery<ITEM> last() {
+	public final ListQuery<ITEM> last() {
 	    return eq(size() - 1);
 	}
     }
@@ -268,14 +269,14 @@ public class JvQuery {
      * @param <T> リストの内容の型
      * @author fumokmm
      */
-    public static class ListQuery<T> extends AbstractQuery<List<T>, T> {
+    public static final class ListQuery<T> extends AbstractQuery<List<T>, T> {
 	private List<T> list;
 
 	private ListQuery(List<T> list) {
 	    this.list = list;
 	}
 
-	public ListQuery<T> each(Act<T> act) {
+	public final ListQuery<T> each(Act<T> act) {
 	    if (jvQuery.isEmpty(list) || act == null) {
 		return this;
 	    }
@@ -285,7 +286,7 @@ public class JvQuery {
 	    return this;
 	}
 
-	public ListQuery<T> each(Act2<T, Integer> act) {
+	public final ListQuery<T> each(Act2<T, Integer> act) {
 	    if (jvQuery.isEmpty(list) || act == null) {
 		return this;
 	    }
@@ -296,7 +297,7 @@ public class JvQuery {
 	    return this;
 	}
 
-	public <R> ListQuery<R> map(Conv<T, R> conv) {
+	public final <R> ListQuery<R> map(Conv<T, R> conv) {
 	    List<R> result = jvQuery.list();
 	    if (jvQuery.isEmpty(list) || conv == null) {
 		return jvQuery(result);
@@ -307,7 +308,7 @@ public class JvQuery {
 	    return jvQuery(result);
 	}
 
-	public <R> ListQuery<R> map(Conv2<T, Integer, R> conv) {
+	public final <R> ListQuery<R> map(Conv2<T, Integer, R> conv) {
 	    List<R> result = jvQuery.list();
 	    if (jvQuery.isEmpty(list) || conv == null) {
 		return jvQuery(result);
@@ -319,7 +320,7 @@ public class JvQuery {
 	    return jvQuery(result);
 	}
 
-	public ListQuery<T> filter(Pred<T> pred) {
+	public final ListQuery<T> filter(Pred<T> pred) {
 	    if (jvQuery.isEmpty(list) || pred == null) {
 		return this;
 	    }
@@ -332,7 +333,7 @@ public class JvQuery {
 	    return jvQuery(result);
 	}
 
-	public ListQuery<T> filter(Pred2<T, Integer> pred) {
+	public final ListQuery<T> filter(Pred2<T, Integer> pred) {
 	    if (jvQuery.isEmpty(list) || pred == null) {
 		return this;
 	    }
@@ -346,40 +347,47 @@ public class JvQuery {
 	    return jvQuery(result);
 	}
 
-	public ListQuery<T> filter(Filter filter) {
+	public final ListQuery<T> filter(Filter filter) {
 	    if (jvQuery.isEmpty(list) || filter == null || filter.getFilter() == null) {
 		return this;
 	    }
 	    Pred2<T, Integer> fil = filter.getFilter();
 	    return filter(fil);
 	}
+	
+	public final <R> ListQuery<R> foldLeft(R init, Func2<R, T, R> fold) {
+	    R result = init;
+	    for (T t : list) {
+		result = fold.call(result, t);
+	    }
+	    return jvQuery(jvQuery.list(result));
+	}
 
-	public List<T> get() {
+	public final List<T> get() {
 	    if (jvQuery.isEmpty(list)) {
 		return jvQuery.list();
 	    }
 	    return list;
 	}
 
-	public T get(int index) {
+	public final T get(int index) {
 	    return 0 <= index && index < jvQuery.size(list) ? list.get(index) : null;
 	}
 
-	public Option<T> getOption(int index) {
+	public final Option<T> getOption(int index) {
 	    return jvQuery.option(get(index));
 	}
 
 	@Override
-	public int size() {
+	public final int size() {
 	    return jvQuery.size(list);
 	}
 
 	@Override
-	public ListQuery<T> eq(int index) {
+	public final ListQuery<T> eq(int index) {
 	    Option<T> resultItem = getOption(index);
 	    if (resultItem.hasValue()) {
 		T t = resultItem.get();
-		@SuppressWarnings("unchecked")
 		List<T> result = jvQuery.list(t);
 		return jvQuery(result);
 	    } else {
@@ -389,7 +397,7 @@ public class JvQuery {
 	}
 
 	@Override
-	public ListQuery<T> lt(int index) {
+	public final ListQuery<T> lt(int index) {
 	    final int idx = index;
 	    return filter(new Pred2<T, Integer>(){
 		@Override
@@ -400,7 +408,7 @@ public class JvQuery {
 	}
 
 	@Override
-	public ListQuery<T> gt(int index) {
+	public final ListQuery<T> gt(int index) {
 	    final int idx = index;
 	    return filter(new Pred2<T, Integer>(){
 		@Override
@@ -476,6 +484,10 @@ public class JvQuery {
     public static interface Filter {
 	public <T> Pred2<T, Integer> getFilter();
     }
+    
+    public static interface Fold {
+	public <T, R> Func2<R, T, R> getFunc();
+    }
 
     public static enum IndexIs implements Filter {
 	/** 偶数 */
@@ -542,7 +554,7 @@ public class JvQuery {
 	}
     }
     
-    private static class Some<T> extends Option<T> {
+    private static final class Some<T> extends Option<T> {
 	private T t;
 	private Some(T t) {
 	    this.t = t;
@@ -557,7 +569,7 @@ public class JvQuery {
 	}
     }
     
-    private static class None<T> extends Option<T> {
+    private static final class None<T> extends Option<T> {
 	private None() {}
 	@Override
 	public boolean hasValue() {
