@@ -308,39 +308,41 @@ public final class JvQuery {
 	    return jvQuery(result);
 	}
 
-	public final <R> ListQuery<R> map(MapWithIndexBlock<T, R> block) {
+	public final <R> ListQuery<R> map(MapWithIndexBlock<T, R> conv) {
 	    List<R> result = jvQuery.list();
-	    if (jvQuery.isEmpty(list) || block == null) {
+	    if (jvQuery.isEmpty(list) || conv == null) {
 		return jvQuery(result);
 	    }
 	    for (int index = 0; index < list.size(); index++) {
 		T t = jvQuery.nth(list, index);
-		result.add(block.call(t, index));
+		result.add(conv.call(t, index));
 	    }
 	    return jvQuery(result);
 	}
 
-	public final ListQuery<T> filter(Pred<T> pred) {
-	    if (jvQuery.isEmpty(list) || pred == null) {
+	public final ListQuery<T> filter(FilterBlock<T> block) {
+	    if (jvQuery.isEmpty(list) || block == null) {
 		return this;
 	    }
 	    List<T> result = jvQuery.list();
 	    for (T t : list) {
-		if (pred.is(t)) {
+		Boolean is = block.call(t);
+		if (is != null && is) {
 		    result.add(t);
 		}
 	    }
 	    return jvQuery(result);
 	}
 
-	public final ListQuery<T> filter(Pred2<T, Integer> pred) {
-	    if (jvQuery.isEmpty(list) || pred == null) {
+	public final ListQuery<T> filter(FilterWithIndexBlock<T> block) {
+	    if (jvQuery.isEmpty(list) || block == null) {
 		return this;
 	    }
 	    List<T> result = jvQuery.list();
 	    for (int index = 0; index < list.size(); index++) {
 		T t = jvQuery.nth(list, index);
-		if (pred.is(t, index)) {
+		Boolean is = block.call(t, index);
+		if (is != null && is) {
 		    result.add(t);
 		}
 	    }
@@ -351,7 +353,7 @@ public final class JvQuery {
 	    if (jvQuery.isEmpty(list) || filter == null || filter.getFilter() == null) {
 		return this;
 	    }
-	    Pred2<T, Integer> fil = filter.getFilter();
+	    FilterWithIndexBlock<T> fil = filter.getFilter();
 	    return filter(fil);
 	}
 	
@@ -399,9 +401,9 @@ public final class JvQuery {
 	@Override
 	public final ListQuery<T> lt(int index) {
 	    final int idx = index;
-	    return filter(new Pred2<T, Integer>(){
+	    return filter(new FilterWithIndexBlock<T>(){
 		@Override
-		public boolean is(T t, Integer tIdx) {
+		public Boolean call(T t, Integer tIdx) {
 		    return tIdx < idx;
 		}
 	    });
@@ -410,9 +412,9 @@ public final class JvQuery {
 	@Override
 	public final ListQuery<T> gt(int index) {
 	    final int idx = index;
-	    return filter(new Pred2<T, Integer>(){
+	    return filter(new FilterWithIndexBlock<T>(){
 		@Override
-		public boolean is(T t, Integer tIdx) {
+		public Boolean call(T t, Integer tIdx) {
 		    return tIdx > idx;
 		}
 	    });
@@ -453,6 +455,9 @@ public final class JvQuery {
     public static interface MapBlock<T, R> extends Function1<T, R> {} 
     public static interface MapWithIndexBlock<T, R> extends Function2<T, Integer, R> {}
     
+    public static interface FilterBlock<T> extends Function1<T, Boolean> {} 
+    public static interface FilterWithIndexBlock<T> extends Function2<T, Integer, Boolean> {}
+
     public static interface Act<A> extends Act1<A> {
     }
 
@@ -514,7 +519,7 @@ public final class JvQuery {
     }
     
     public static interface Filter {
-	public <T> Pred2<T, Integer> getFilter();
+	<T> FilterWithIndexBlock<T> getFilter();
     }
     
     public static interface Fold {
@@ -525,10 +530,10 @@ public final class JvQuery {
 	/** 偶数 */
 	even {
 	    @Override
-	    public <T> Pred2<T, Integer> getFilter() {
-		return new Pred2<T, Integer>() {
+	    public <T> FilterWithIndexBlock<T> getFilter() {
+		return new FilterWithIndexBlock<T>() {
 		    @Override
-		    public boolean is(T t, Integer idx) {
+		    public Boolean call(T t, Integer idx) {
 			return idx % 2 == 0;
 		    }
 		};
@@ -538,10 +543,10 @@ public final class JvQuery {
 	/** 奇数 */
 	odd {
 	    @Override
-	    public <T> Pred2<T, Integer> getFilter() {
-		return new Pred2<T, Integer>() {
+	    public <T> FilterWithIndexBlock<T> getFilter() {
+		return new FilterWithIndexBlock<T>() {
 		    @Override
-		    public boolean is(T t, Integer idx) {
+		    public Boolean call(T t, Integer idx) {
 			return idx % 2 == 1;
 		    }
 		};

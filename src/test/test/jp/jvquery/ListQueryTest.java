@@ -55,9 +55,9 @@ public class ListQueryTest {
     public void filterのテスト() {
 	List<String> strList = $.list("a", "b", "c");
 	List<String> expected = $.list("a", "c");
-	assertThat($(strList).filter(new Pred<String>(){
+	assertThat($(strList).filter(new FilterBlock<String>(){
 	    @Override
-	    public boolean is(String a1) {
+	    public Boolean call(String a1) {
 		return ! a1.equals("b");
 	    }
 	}).get(), is(expected));
