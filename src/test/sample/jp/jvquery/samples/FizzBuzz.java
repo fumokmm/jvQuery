@@ -14,8 +14,8 @@ public class FizzBuzz {
 		       a1 % 3  == 0 ? "Fizz"     :
 		       String.valueOf(a1);
 	    }
-	}).each(new Act<String>(){
-	    @Override public void run(String a1) {
+	}).each(new EachBlock<String>(){
+	    @Override public void call(String a1) {
 		System.out.println(a1);
 	    }
 	});

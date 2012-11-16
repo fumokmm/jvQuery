@@ -276,23 +276,23 @@ public final class JvQuery {
 	    this.list = list;
 	}
 
-	public final ListQuery<T> each(Act<T> act) {
-	    if (jvQuery.isEmpty(list) || act == null) {
+	public final ListQuery<T> each(EachBlock<T> block) {
+	    if (jvQuery.isEmpty(list) || block == null) {
 		return this;
 	    }
 	    for (T t : list) {
-		act.run(t);
+		block.call(t);
 	    }
 	    return this;
 	}
 
-	public final ListQuery<T> each(Act2<T, Integer> act) {
-	    if (jvQuery.isEmpty(list) || act == null) {
+	public final ListQuery<T> each(EachWithIndexBlock<T> block) {
+	    if (jvQuery.isEmpty(list) || block == null) {
 		return this;
 	    }
 	    for (int index = 0; index < list.size(); index++) {
 		T t = jvQuery.nth(list, index);
-		act.run(t, index);
+		block.call(t, index);
 	    }
 	    return this;
 	}
@@ -421,6 +421,35 @@ public final class JvQuery {
     
     // ---------------------------------------------------
 
+    public static interface FunctionVoid {
+	void call();
+    }
+    public static interface FunctionVoid1<V1> {
+	void call(V1 v1);
+    }
+    public static interface FunctionVoid2<V1, V2> {
+	void call(V1 v1, V2 v2);
+    }
+    public static interface FunctionVoid3<V1, V2, V3> {
+	void call(V1 v1, V2 v2, V3 v3);
+    }
+
+    public static interface Function<R> {
+	R call();
+    }
+    public static interface Function1<V1, R> {
+	R call(V1 v1);
+    }
+    public static interface Function2<V1, V2, R> {
+	R call(V1 v1, V2 v2);
+    }
+    public static interface Function3<V1, V2, V3, R> {
+	R call(V1 v1, V2 v2, V3 v3);
+    }
+
+    public static interface EachBlock<T> extends FunctionVoid1<T> {}
+    public static interface EachWithIndexBlock<T> extends FunctionVoid2<T, Integer> {}
+    
     public static interface Act<A> extends Act1<A> {
     }
 
