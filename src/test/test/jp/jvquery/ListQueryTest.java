@@ -92,9 +92,9 @@ public class ListQueryTest {
     @Test
     public void mapTest() {
 	List<Integer> nums = $.list(1, 2, 3);
-	assertThat($(nums).map(new Conv<Integer, String>(){
+	assertThat($(nums).map(new MapBlock<Integer, String>(){
 	    @Override
-	    public String convert(Integer a1) {
+	    public String call(Integer a1) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < a1; i++) {
 		    sb.append(String.valueOf(a1));

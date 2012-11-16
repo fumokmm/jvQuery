@@ -7,8 +7,8 @@ import static jp.jvquery.JvQuery.*;
  */
 public class FizzBuzz {
     public static void main(String[] args) {
-	$($.range(1, 100)).map(new Conv<Integer, String>(){
-	    @Override public String convert(Integer a1) {
+	$($.range(1, 100)).map(new MapBlock<Integer, String>(){
+	    @Override public String call(Integer a1) {
 		return a1 % 15 == 0 ? "FizzBuzz" :
 		       a1 % 5  == 0 ? "Buzz"     :
 		       a1 % 3  == 0 ? "Fizz"     :

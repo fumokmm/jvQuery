@@ -297,25 +297,25 @@ public final class JvQuery {
 	    return this;
 	}
 
-	public final <R> ListQuery<R> map(Conv<T, R> conv) {
+	public final <R> ListQuery<R> map(MapBlock<T, R> block) {
 	    List<R> result = jvQuery.list();
-	    if (jvQuery.isEmpty(list) || conv == null) {
+	    if (jvQuery.isEmpty(list) || block == null) {
 		return jvQuery(result);
 	    }
 	    for (T t : list) {
-		result.add(conv.convert(t));
+		result.add(block.call(t));
 	    }
 	    return jvQuery(result);
 	}
 
-	public final <R> ListQuery<R> map(Conv2<T, Integer, R> conv) {
+	public final <R> ListQuery<R> map(MapWithIndexBlock<T, R> block) {
 	    List<R> result = jvQuery.list();
-	    if (jvQuery.isEmpty(list) || conv == null) {
+	    if (jvQuery.isEmpty(list) || block == null) {
 		return jvQuery(result);
 	    }
 	    for (int index = 0; index < list.size(); index++) {
 		T t = jvQuery.nth(list, index);
-		result.add(conv.convert(t, index));
+		result.add(block.call(t, index));
 	    }
 	    return jvQuery(result);
 	}
@@ -449,6 +449,9 @@ public final class JvQuery {
 
     public static interface EachBlock<T> extends FunctionVoid1<T> {}
     public static interface EachWithIndexBlock<T> extends FunctionVoid2<T, Integer> {}
+    
+    public static interface MapBlock<T, R> extends Function1<T, R> {} 
+    public static interface MapWithIndexBlock<T, R> extends Function2<T, Integer, R> {}
     
     public static interface Act<A> extends Act1<A> {
     }
