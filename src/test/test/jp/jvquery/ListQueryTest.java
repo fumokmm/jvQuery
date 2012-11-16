@@ -81,7 +81,7 @@ public class ListQueryTest {
     @Test
     public void foldLeftのテスト() {
 	List<Integer> nums = $.range(1, 10);
-	assertThat($(nums).foldLeft(0, new Func2<Integer, Integer, Integer>(){
+	assertThat($(nums).foldLeft(0, new FoldBlock<Integer, Integer>(){
 	    @Override
 	    public Integer call(Integer result, Integer num) {
 		return result + num;

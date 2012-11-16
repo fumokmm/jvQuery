@@ -357,10 +357,10 @@ public final class JvQuery {
 	    return filter(fil);
 	}
 	
-	public final <R> ListQuery<R> foldLeft(R init, Func2<R, T, R> fold) {
+	public final <R> ListQuery<R> foldLeft(R init, FoldBlock<T, R> block) {
 	    R result = init;
 	    for (T t : list) {
-		result = fold.call(result, t);
+		result = block.call(result, t);
 	    }
 	    return jvQuery(jvQuery.list(result));
 	}
@@ -458,6 +458,8 @@ public final class JvQuery {
     public static interface FilterBlock<T> extends Function1<T, Boolean> {} 
     public static interface FilterWithIndexBlock<T> extends Function2<T, Integer, Boolean> {}
 
+    public static interface FoldBlock<T, R> extends Function2<R, T, R> {}
+    
     public static interface Act<A> extends Act1<A> {
     }
 
@@ -522,10 +524,6 @@ public final class JvQuery {
 	<T> FilterWithIndexBlock<T> getFilter();
     }
     
-    public static interface Fold {
-	public <T, R> Func2<R, T, R> getFunc();
-    }
-
     public static enum IndexIs implements Filter {
 	/** 偶数 */
 	even {
