@@ -356,13 +356,57 @@ public final class JvQuery {
 	    FilterWithIndexBlock<T> fil = filter.getFilter();
 	    return filter(fil);
 	}
-	
+
+	/**
+	 * foldLeft(0, jvQuery.list(1, 2, 3)) => (((0 + 1) + 2) + 3)
+	 * 
+	 * @param init 初期値
+	 * @param block 処理
+	 * @return 結果
+	 */
 	public final <R> ListQuery<R> foldLeft(R init, FoldBlock<T, R> block) {
+	    if (jvQuery.isEmpty(list) || block == null) {
+		List<R> resultList = jvQuery.list();
+		return jvQuery(resultList);
+	    }
 	    R result = init;
 	    for (T t : list) {
 		result = block.call(result, t);
 	    }
 	    return jvQuery(jvQuery.list(result));
+	}
+
+	/**
+	 * foldRight(0, jvQuery.list(1, 2, 3)) => (1 + (2 + (3 + 0)))
+	 * 
+	 * @param init 初期値
+	 * @param block 処理
+	 * @return 結果
+	 */
+	public final <R> ListQuery<R> foldRight(R init, FoldBlock<T, R> block) {
+	    if (jvQuery.isEmpty(list) || block == null) {
+		List<R> resultList = jvQuery.list();
+		return jvQuery(resultList);
+	    }
+	    R result = init;
+	    for (T t : reverse().get()) {
+		result = block.call(result, t);
+	    }
+	    return jvQuery(jvQuery.list(result));
+	}
+
+	public ListQuery<T> reverse() {
+	    return sort(Collections.<T>reverseOrder());
+	}
+	
+	public ListQuery<T> sort(Comparator<? super T> cmp) {
+	    if (jvQuery.isEmpty(list) || cmp == null) {
+		return this;
+	    }
+	    List<T> newList = jvQuery.list();
+	    newList.addAll(list);
+	    Collections.sort(newList, cmp);
+	    return jvQuery(newList);
 	}
 
 	public final List<T> get() {

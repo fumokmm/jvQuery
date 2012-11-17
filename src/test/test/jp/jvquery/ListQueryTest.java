@@ -5,13 +5,19 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
+import jp.jvquery.JvQuery.EachBlock;
+import jp.jvquery.JvQuery.FilterBlock;
+import jp.jvquery.JvQuery.FoldBlock;
+import jp.jvquery.JvQuery.MapBlock;
+import jp.jvquery.JvQuery.*;
+
 import static jp.jvquery.JvQuery.*;
 import org.junit.*;
 
 public class ListQueryTest {
 
     @Test
-    public void eachTest() {
+    public void eachのテスト() {
 	List<Integer> nums = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 	final int[] num = new int[]{ 0 };
 	$(nums).each(new EachBlock<Integer>(){
@@ -24,7 +30,7 @@ public class ListQueryTest {
     }
     
     @Test
-    public void eachTest_Empty() {
+    public void eachのテスト_Empty() {
 	List<Integer> nums = $.list();
 	final int[] num = new int[]{ 0 };
 	// ループしない
@@ -38,7 +44,7 @@ public class ListQueryTest {
     }
 
     @Test
-    public void eachTest_Null() {
+    public void eachのテスト_Null() {
 	List<Integer> nums = null;
 	final int[] num = new int[]{ 0 };
 	// ループしない
@@ -52,6 +58,67 @@ public class ListQueryTest {
     }
     
     @Test
+    public void eachのテスト_NullBlock() {
+        List<Integer> nums = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        final int[] num = new int[]{ 0 };
+        EachBlock<Integer> block = null;
+        $(nums).each(block);
+        assertThat(num[0], is(0));
+    }
+
+    @Test
+    public void mapのテスト() {
+        List<Integer> nums = $.list(1, 2, 3);
+        assertThat($(nums).map(new MapBlock<Integer, String>(){
+            @Override
+            public String call(Integer a1) {
+        	StringBuilder sb = new StringBuilder();
+        	for (int i = 0; i < a1; i++) {
+        	    sb.append(String.valueOf(a1));
+        	}
+        	return sb.toString();
+            }
+        }).get(), is($.list("1", "22", "333")));
+    }
+
+    @Test
+    public void mapのテスト_Empty() {
+        List<Integer> nums = $.list();
+        assertThat($(nums).map(new MapBlock<Integer, String>(){
+            @Override
+            public String call(Integer a1) {
+        	StringBuilder sb = new StringBuilder();
+        	for (int i = 0; i < a1; i++) {
+        	    sb.append(String.valueOf(a1));
+        	}
+        	return sb.toString();
+            }
+        }).isEmpty(), is(true));
+    }
+
+    @Test
+    public void mapのテスト_Null() {
+        List<Integer> nums = null;
+        assertThat($(nums).map(new MapBlock<Integer, String>(){
+            @Override
+            public String call(Integer a1) {
+        	StringBuilder sb = new StringBuilder();
+        	for (int i = 0; i < a1; i++) {
+        	    sb.append(String.valueOf(a1));
+        	}
+        	return sb.toString();
+            }
+        }).isEmpty(), is(true));
+    }
+
+    @Test
+    public void mapのテスト_NullBlock() {
+        List<Integer> nums = $.list(1, 2, 3);
+        MapBlock<Integer, String> block = null;
+        assertThat($(nums).map(block).isEmpty(), is(true));
+    }
+
+    @Test
     public void filterのテスト() {
 	List<String> strList = $.list("a", "b", "c");
 	List<String> expected = $.list("a", "c");
@@ -63,6 +130,35 @@ public class ListQueryTest {
 	}).get(), is(expected));
     }
     
+    @Test
+    public void filterのテスト_Empty() {
+	List<String> strList = $.list();
+	assertThat($(strList).filter(new FilterBlock<String>(){
+	    @Override
+	    public Boolean call(String a1) {
+		return ! a1.equals("b");
+	    }
+	}).isEmpty(), is(true));
+    }
+
+    @Test
+    public void filterのテスト_Null() {
+	List<String> strList = null;
+	assertThat($(strList).filter(new FilterBlock<String>(){
+	    @Override
+	    public Boolean call(String a1) {
+		return ! a1.equals("b");
+	    }
+	}).isEmpty(), is(true));
+    }
+
+    @Test
+    public void filterのテスト_NullBlock() {
+        List<String> strList = $.list("a", "b", "c");
+        FilterBlock<String> block = null;
+        assertThat("フィルタされない", $(strList).filter(block).get(), is(strList));
+    }
+
     @Test
     public void filterのテスト_IndexIs() {
 	List<String> strList = $.list("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
@@ -77,9 +173,30 @@ public class ListQueryTest {
 	    )
 	);
     }
+
+    @Test
+    public void filterのテスト_FilterNull() {
+	List<String> strList = $.list("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
+	Filter fil = null;
+	assertThat("nullはフィルタされず最初と同じ", $(strList).filter(fil).get(), is(strList));
+    }
+
+    @Test
+    public void filterのテスト_FilterGetNull() {
+	List<String> strList = $.list("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
+	Filter fil = new Filter() {
+	    @SuppressWarnings("unchecked")
+	    @Override
+	    public FilterWithIndexBlock<String> getFilter() {
+		FilterWithIndexBlock<String> fil = null;
+		return fil;
+	    }
+	};
+	assertThat("#getFilter結果がnullはフィルタされず最初と同じ", $(strList).filter(fil).get(), is(strList));
+    }
     
     @Test
-    public void foldLeftのテスト() {
+    public void foldLeftのテスト_Integer() {
 	List<Integer> nums = $.range(1, 10);
 	assertThat($(nums).foldLeft(0, new FoldBlock<Integer, Integer>(){
 	    @Override
@@ -88,20 +205,120 @@ public class ListQueryTest {
 	    }
 	}).get(0), is(55));
     }
+
+    @Test
+    public void foldLeftのテスト_Empty() {
+	List<Integer> nums = $.list();
+	assertThat($(nums).foldLeft(0, new FoldBlock<Integer, Integer>(){
+	    @Override
+	    public Integer call(Integer result, Integer num) {
+		return result + num;
+	    }
+	}).isEmpty(), is(true));
+    }
     
     @Test
-    public void mapTest() {
-	List<Integer> nums = $.list(1, 2, 3);
-	assertThat($(nums).map(new MapBlock<Integer, String>(){
+    public void foldLeftのテスト_Null() {
+	List<Integer> nums = null;
+	assertThat($(nums).foldLeft(0, new FoldBlock<Integer, Integer>(){
 	    @Override
-	    public String call(Integer a1) {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < a1; i++) {
-		    sb.append(String.valueOf(a1));
-		}
-		return sb.toString();
+	    public Integer call(Integer result, Integer num) {
+		return result + num;
 	    }
-	}).get(), is($.list("1", "22", "333")));
+	}).isEmpty(), is(true));
+    }
+
+    @Test
+    public void foldLeftのテスト_NullBlock() {
+        List<Integer> nums = $.range(1, 10);
+        FoldBlock<Integer, Integer> block = null;
+        assertThat($(nums).foldLeft(0, block).isEmpty(), is(true));
+    }
+
+    @Test
+    public void foldLeftのテスト_String() {
+        List<Integer> nums = $.range(1, 3);
+        assertThat($(nums).foldLeft("0", new FoldBlock<Integer, String>(){
+            @Override
+            public String call(String result, Integer num) {
+        	return "(" + result + " + " + num + ")";
+            }
+        }).get(0), is("(((0 + 1) + 2) + 3)"));
+    }
+
+    @Test
+    public void foldRightのテスト_Integer() {
+	List<Integer> nums = $.range(1, 10);
+	assertThat($(nums).foldRight(0, new FoldBlock<Integer, Integer>(){
+	    @Override
+	    public Integer call(Integer result, Integer num) {
+		return num + result;
+	    }
+	}).get(0), is(55));
+    }
+
+    @Test
+    public void foldRightのテスト_Empty() {
+	List<Integer> nums = $.list();
+	assertThat($(nums).foldRight(0, new FoldBlock<Integer, Integer>(){
+	    @Override
+	    public Integer call(Integer result, Integer num) {
+		return num + result;
+	    }
+	}).isEmpty(), is(true));
+    }
+
+    @Test
+    public void foldRightのテスト_Null() {
+	List<Integer> nums = null;
+	assertThat($(nums).foldRight(0, new FoldBlock<Integer, Integer>(){
+	    @Override
+	    public Integer call(Integer result, Integer num) {
+		return num + result;
+	    }
+	}).isEmpty(), is(true));
+    }
+
+    @Test
+    public void foldRightのテスト_NullBlock() {
+        List<Integer> nums = $.range(1, 10);
+        FoldBlock<Integer, Integer> block = null;
+        assertThat($(nums).foldRight(0, block).isEmpty(), is(true));
+    }
+
+    @Test
+    public void foldRightのテスト_String() {
+	List<Integer> nums = $.range(1, 3);
+	assertThat($(nums).foldRight("0", new FoldBlock<Integer, String>(){
+	    @Override
+	    public String call(String result, Integer num) {
+		return "(" + num + " + " + result + ")";
+	    }
+	}).get(0), is("(1 + (2 + (3 + 0)))"));
+    }
+
+    @Test
+    public void reverseのテスト() {
+	List<Integer> nums = $.range(1, 5);
+	assertThat($(nums).reverse().get(), is($.list(5, 4, 3, 2, 1)));
+    }
+    
+    @Test
+    public void sortのテスト() {
+	List<Integer> nums = $.list(3, 5, 4, 2, 1);
+	assertThat($(nums).sort(new Comparator<Integer>(){
+	    @Override
+	    public int compare(Integer o1, Integer o2) {
+		return o1 - o2;
+	    }
+	}).get(), is($.list(1, 2, 3, 4, 5)));
+    }
+    
+    @Test
+    public void sortのテスト_NullComparator() {
+	List<Integer> nums = $.list(3, 5, 4, 2, 1);
+	Comparator<Integer> cmp = null;
+	assertThat("ソートされない", $(nums).sort(cmp).get(), is($.list(3, 5, 4, 2, 1)));
     }
     
     @Test
