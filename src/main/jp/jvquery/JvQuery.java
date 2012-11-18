@@ -202,13 +202,13 @@ public final class JvQuery {
     
     public static abstract class AbstractQuery<COLL, ITEM> implements Query {
 	/**
-	 * 長さを取得します
+	 * 長さを取得します。
 	 * @return 長さ
 	 */
 	public abstract int size();
 
 	/**
-	 * 長さを取得します (#sizeの別名)
+	 * 長さを取得します。 (#sizeの別名)
 	 * @return 長さ
 	 */
 	@Override
@@ -217,7 +217,7 @@ public final class JvQuery {
 	}
 
 	/**
-	 * 空かどうかチェックします
+	 * 空かどうかチェックします。
 	 * @return 空かどうか
 	 */
 	@Override
@@ -225,6 +225,48 @@ public final class JvQuery {
 	    return size() < 1;
 	}
 	
+	/**
+	 * 要素をすべて取得します。
+	 * @return すべての要素
+	 */
+	public abstract COLL getAll();
+
+	/**
+	 * 要素を取得します。（最初のもの）
+	 * 
+	 * @return 要素（取得できなかった場合、null）
+	 */
+	public final ITEM get() {
+	    return first().get(0);
+	}
+	
+	/**
+	 * 要素を取得します。（指定したインデックス）
+	 * 
+	 * @param index インデックス
+	 * @return 要素（取得できなかった場合、null）
+	 */
+	public abstract ITEM get(int index);
+
+	/**
+	 * 要素をオプション型で取得します。（最初のもの）
+	 * 
+	 * @return 要素（オプション型）
+	 */
+	public final Option<ITEM> getOption() {
+	    return jvQuery.option(get());
+	}
+	
+	/**
+	 * 要素をオプション型で取得します。（指定したインデックス）
+	 * 
+	 * @param index インデックス
+	 * @return 要素（オプション型）
+	 */
+	public final Option<ITEM> getOption(int index) {
+	    return jvQuery.option(get(index));
+	}
+
 	/**
 	 * 指定したインデックスの要素のみを抽出します。
 	 * インデックスが範囲外の場合、空となります。
@@ -274,6 +316,19 @@ public final class JvQuery {
 
 	private ListQuery(List<T> list) {
 	    this.list = list;
+	}
+
+	@Override
+	public List<T> getAll() {
+	    if (isEmpty()) {
+		return jvQuery.list();
+	    }
+	    return list;
+	}
+
+	@Override
+	public final T get(int index) {
+	    return 0 <= index && index < jvQuery.size(list) ? list.get(index) : null;
 	}
 
 	public final ListQuery<T> each(EachBlock<T> block) {
@@ -373,7 +428,7 @@ public final class JvQuery {
 		return jvQuery(jvQuery.list(result));
 	    }
 	    // TODO gt(0) はあとで#tailに
-	    for (T t : gt(0).get()) {
+	    for (T t : gt(0).getAll()) {
 		result = block.call(result, t);
 	    }
 	    return jvQuery(jvQuery.list(result));
@@ -415,7 +470,7 @@ public final class JvQuery {
 		return jvQuery(jvQuery.list(result));
 	    }
 	    // TODO gt(0) はあとで#tailに
-	    for (T t : rev.gt(0).get()) {
+	    for (T t : rev.gt(0).getAll()) {
 		result = block.call(result, t);
 	    }
 	    return jvQuery(jvQuery.list(result));
@@ -434,7 +489,7 @@ public final class JvQuery {
 		return jvQuery(resultList);
 	    }
 	    R result = init;
-	    for (T t : reverse().get()) {
+	    for (T t : reverse().getAll()) {
 		result = block.call(result, t);
 	    }
 	    return jvQuery(jvQuery.list(result));
@@ -494,21 +549,6 @@ public final class JvQuery {
 	    newList.addAll(list);
 	    Collections.sort(newList, cmp);
 	    return jvQuery(newList);
-	}
-
-	public final List<T> get() {
-	    if (isEmpty()) {
-		return jvQuery.list();
-	    }
-	    return list;
-	}
-
-	public final T get(int index) {
-	    return 0 <= index && index < jvQuery.size(list) ? list.get(index) : null;
-	}
-
-	public final Option<T> getOption(int index) {
-	    return jvQuery.option(get(index));
 	}
 
 	@Override
