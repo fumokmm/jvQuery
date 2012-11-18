@@ -358,6 +358,28 @@ public final class JvQuery {
 	}
 
 	/**
+	 * foldLeft(jvQuery.list(1, 2, 3)) => ((1 + 2) + 3)
+	 * 
+	 * @param block 処理
+	 * @return 結果
+	 */
+	public final ListQuery<T> foldLeft(FoldBlock<T, T> block) {
+	    if (isEmpty() || block == null) {
+		List<T> resultList = jvQuery.list();
+		return jvQuery(resultList);
+	    }
+	    T result = get(0);
+	    if (size() == 1) {
+		return jvQuery(jvQuery.list(result));
+	    }
+	    // TODO gt(0) はあとで#tailに
+	    for (T t : gt(0).get()) {
+		result = block.call(result, t);
+	    }
+	    return jvQuery(jvQuery.list(result));
+	}
+
+	/**
 	 * foldLeft(0, jvQuery.list(1, 2, 3)) => (((0 + 1) + 2) + 3)
 	 * 
 	 * @param init 初期値
@@ -371,6 +393,29 @@ public final class JvQuery {
 	    }
 	    R result = init;
 	    for (T t : list) {
+		result = block.call(result, t);
+	    }
+	    return jvQuery(jvQuery.list(result));
+	}
+
+	/**
+	 * foldRight(jvQuery.list(1, 2, 3)) => (1 + (2 + 3))
+	 * 
+	 * @param block 処理
+	 * @return 結果
+	 */
+	public final ListQuery<T> foldRight(FoldBlock<T, T> block) {
+	    if (isEmpty() || block == null) {
+		List<T> resultList = jvQuery.list();
+		return jvQuery(resultList);
+	    }
+	    ListQuery<T> rev = reverse();
+	    T result = rev.get(0);
+	    if (rev.size() == 1) {
+		return jvQuery(jvQuery.list(result));
+	    }
+	    // TODO gt(0) はあとで#tailに
+	    for (T t : rev.gt(0).get()) {
 		result = block.call(result, t);
 	    }
 	    return jvQuery(jvQuery.list(result));
@@ -395,11 +440,53 @@ public final class JvQuery {
 	    return jvQuery(jvQuery.list(result));
 	}
 
-	public ListQuery<T> reverse() {
+	/**
+	 * {@link #foldLeft(FoldBlock)}の別名。
+	 * 
+	 * @param block 処理
+	 * @return 結果
+	 */
+	public final ListQuery<T> inject(InjectBlock<T, T> block) {
+	    return foldLeft(block);
+	}
+
+	/**
+	 * {@link #foldLeft(Object, FoldBlock)}の別名。
+	 * 
+	 * @param init 初期値
+	 * @param block 処理
+	 * @return 結果
+	 */
+	public final <R> ListQuery<R> inject(R init, InjectBlock<T, R> block) {
+	    return foldLeft(init, block);
+	}
+	
+	/**
+	 * {@link #foldLeft(FoldBlock)}の別名。
+	 * 
+	 * @param block 処理
+	 * @return 結果
+	 */
+	public final ListQuery<T> reduce(ReduceBlock<T, T> block) {
+	    return foldLeft(block);
+	}
+	
+	/**
+	 * {@link #foldLeft(Object, FoldBlock)}の別名。
+	 * 
+	 * @param init 初期値
+	 * @param block 処理
+	 * @return 結果
+	 */
+	public final <R> ListQuery<R> reduce(R init, ReduceBlock<T, R> block) {
+	    return foldLeft(init, block);
+	}
+
+	public final ListQuery<T> reverse() {
 	    return sort(Collections.<T>reverseOrder());
 	}
 	
-	public ListQuery<T> sort(Comparator<? super T> cmp) {
+	public final ListQuery<T> sort(Comparator<? super T> cmp) {
 	    if (jvQuery.isEmpty(list) || cmp == null) {
 		return this;
 	    }
@@ -503,6 +590,8 @@ public final class JvQuery {
     public static interface FilterWithIndexBlock<T> extends Function2<T, Integer, Boolean> {}
 
     public static interface FoldBlock<T, R> extends Function2<R, T, R> {}
+    public static interface InjectBlock<T, R> extends FoldBlock<T, R> {}
+    public static interface ReduceBlock<T, R> extends FoldBlock<T, R> {}
     
     public static interface Filter {
 	<T> FilterWithIndexBlock<T> getFilter();

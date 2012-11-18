@@ -194,7 +194,68 @@ public class ListQueryTest {
 	};
 	assertThat("#getFilter結果がnullはフィルタされず最初と同じ", $(strList).filter(fil).get(), is(strList));
     }
+
+    @Test
+    public void foldLeftのテスト_初期値なし_Empty() {
+	List<Integer> nums = $.list();
+	assertThat($(nums).foldLeft(new FoldBlock<Integer, Integer>() {
+	    @Override
+	    public Integer call(Integer v1, Integer v2) {
+		return null;
+	    }
+	}).isEmpty(), is(true));
+    }
     
+    @Test
+    public void foldLeftのテスト_初期値なし_Null() {
+	List<Integer> nums = null;
+	assertThat($(nums).foldLeft(new FoldBlock<Integer, Integer>() {
+	    @Override
+	    public Integer call(Integer v1, Integer v2) {
+		return null;
+	    }
+	}).isEmpty(), is(true));
+    }
+
+    @Test
+    public void foldLeftのテスト_初期値なし_NullBlock() {
+	List<Integer> nums = $.list(1, 2, 3);
+	assertThat($(nums).foldLeft(null).isEmpty(), is(true));
+    }
+
+    @Test
+    public void foldLeftのテスト_初期値なし_要素数1() {
+	List<Integer> nums = $.list(1);
+	assertThat($(nums).foldLeft(new FoldBlock<Integer, Integer>() {
+	    @Override
+	    public Integer call(Integer v1, Integer v2) {
+		return v1 + v2;
+	    }
+	}).get(0), is(1));
+    }
+
+    @Test
+    public void foldLeftのテスト_初期値なし_要素数2() {
+	List<Integer> nums = $.list(1, 2);
+	assertThat($(nums).foldLeft(new FoldBlock<Integer, Integer>() {
+	    @Override
+	    public Integer call(Integer v1, Integer v2) {
+		return v1 + v2;
+	    }
+	}).get(0), is(3));
+    }
+    
+    @Test
+    public void foldLeftのテスト_初期値なし_要素数3() {
+	List<Integer> nums = $.list(1, 2, 3);
+	assertThat($(nums).foldLeft(new FoldBlock<Integer, Integer>() {
+	    @Override
+	    public Integer call(Integer v1, Integer v2) {
+		return v1 + v2;
+	    }
+	}).get(0), is(6));
+    }
+
     @Test
     public void foldLeftのテスト_Integer() {
 	List<Integer> nums = $.range(1, 10);
@@ -246,6 +307,70 @@ public class ListQueryTest {
         }).get(0), is("(((0 + 1) + 2) + 3)"));
     }
 
+
+    @Test
+    public void foldRightのテスト_初期値なし_Empty() {
+	List<Integer> nums = $.list();
+	assertThat($(nums).foldRight(new FoldBlock<Integer, Integer>() {
+	    @Override
+	    public Integer call(Integer v1, Integer v2) {
+		return null;
+	    }
+	}).isEmpty(), is(true));
+    }
+    
+    @Test
+    public void foldRightのテスト_初期値なし_Null() {
+	List<Integer> nums = null;
+	assertThat($(nums).foldRight(new FoldBlock<Integer, Integer>() {
+	    @Override
+	    public Integer call(Integer v1, Integer v2) {
+		return null;
+	    }
+	}).isEmpty(), is(true));
+    }
+
+    @Test
+    public void foldRightのテスト_初期値なし_NullBlock() {
+	List<Integer> nums = $.list(1, 2, 3);
+	assertThat($(nums).foldRight(null).isEmpty(), is(true));
+    }
+
+    @Test
+    public void foldRightのテスト_初期値なし_要素数1() {
+	List<Integer> nums = $.list(1);
+	assertThat($(nums).foldRight(new FoldBlock<Integer, Integer>() {
+	    @Override
+	    public Integer call(Integer result, Integer num) {
+		return num - result;
+	    }
+	}).get(0), is(1));
+    }
+
+    @Test
+    public void foldRightのテスト_初期値なし_要素数2() {
+	List<Integer> nums = $.list(1, 2);
+	// (1 - 2) = -1
+	assertThat($(nums).foldRight(new FoldBlock<Integer, Integer>() {
+	    @Override
+	    public Integer call(Integer result, Integer num) {
+		return num - result;
+	    }
+	}).get(0), is(-1));
+    }
+    
+    @Test
+    public void foldRightのテスト_初期値なし_要素数3() {
+	List<Integer> nums = $.list(1, 2, 3);
+	// (1 - (2 - 3)) = 2
+	assertThat($(nums).foldRight(new FoldBlock<Integer, Integer>() {
+	    @Override
+	    public Integer call(Integer result, Integer num) {
+		return num - result;
+	    }
+	}).get(0), is(2));
+    }
+    
     @Test
     public void foldRightのテスト_Integer() {
 	List<Integer> nums = $.range(1, 10);
@@ -297,6 +422,50 @@ public class ListQueryTest {
 	}).get(0), is("(1 + (2 + (3 + 0)))"));
     }
 
+    @Test
+    public void injectのテスト_初期値なし() {
+	List<Integer> nums = $.range(1, 10);
+	assertThat($(nums).inject(new InjectBlock<Integer, Integer>() {
+	    @Override
+	    public Integer call(Integer v1, Integer v2) {
+		return v1 + v2;
+	    }
+	}).get(0), is(55));
+    }
+    
+    @Test
+    public void injectのテスト_String() {
+	List<Integer> nums = $.range(1, 3);
+	assertThat($(nums).inject("0", new InjectBlock<Integer, String>(){
+	    @Override
+	    public String call(String result, Integer num) {
+		return "(" + result + " + " + num + ")";
+	    }
+	}).get(0), is("(((0 + 1) + 2) + 3)"));
+    }
+
+    @Test
+    public void reduceのテスト_初期値なし() {
+	List<Integer> nums = $.range(1, 10);
+	assertThat($(nums).reduce(new ReduceBlock<Integer, Integer>() {
+	    @Override
+	    public Integer call(Integer v1, Integer v2) {
+		return v1 + v2;
+	    }
+	}).get(0), is(55));
+    }
+    
+    @Test
+    public void reduceのテスト_String() {
+	List<Integer> nums = $.range(1, 3);
+	assertThat($(nums).reduce("0", new ReduceBlock<Integer, String>(){
+	    @Override
+	    public String call(String result, Integer num) {
+		return "(" + result + " + " + num + ")";
+	    }
+	}).get(0), is("(((0 + 1) + 2) + 3)"));
+    }
+    
     @Test
     public void reverseのテスト() {
 	List<Integer> nums = $.range(1, 5);
