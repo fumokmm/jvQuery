@@ -173,6 +173,50 @@ public final class JvQuery {
 	}
 	return range(start, start + size - 1);
     }
+    
+    /**
+     * System.out.print(Object) のエイリアスです。
+     * 
+     * @param obj 出力する値
+     * @return jvQuery
+     */
+    public JvQuery print(Object obj) {
+	System.out.print(obj);
+	return this;
+    }
+    
+    /**
+     * System.out.println() のエイリアスです。
+     * 
+     * @return jvQuery
+     */
+    public JvQuery println() {
+	System.out.println();
+	return this;
+    }
+    
+    /**
+     * System.out.println(Object) のエイリアスです。
+     * 
+     * @param obj 出力する値
+     * @return jvQuery
+     */
+    public JvQuery println(Object obj) {
+	System.out.println(obj);
+	return this;
+    }
+
+    /**
+     * System.out.print(String, Object...) のエイリアスです。
+     * 
+     * @param format 出力フォーマット
+     * @param params 出力する値
+     * @return jvQuery
+     */
+    public JvQuery printf(String format, Object... params) {
+	System.out.printf(format, params);
+	return this;
+    }
 
     // ---------------------------------------------------
     

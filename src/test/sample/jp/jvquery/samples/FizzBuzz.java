@@ -4,6 +4,7 @@ import static jp.jvquery.JvQuery.*;
 
 /**
  * 1から100までのFizzBuzzのサンプルです。
+ * @author fumokmm
  */
 public class FizzBuzz {
     public static void main(String[] args) {
@@ -16,7 +17,7 @@ public class FizzBuzz {
 	    }
 	}).each(new EachBlock<String>(){
 	    @Override public void call(String a1) {
-		System.out.println(a1);
+		$.println(a1);
 	    }
 	});
     }
