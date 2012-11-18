@@ -277,7 +277,7 @@ public final class JvQuery {
 	}
 
 	public final ListQuery<T> each(EachBlock<T> block) {
-	    if (jvQuery.isEmpty(list) || block == null) {
+	    if (isEmpty() || block == null) {
 		return this;
 	    }
 	    for (T t : list) {
@@ -287,7 +287,7 @@ public final class JvQuery {
 	}
 
 	public final ListQuery<T> each(EachWithIndexBlock<T> block) {
-	    if (jvQuery.isEmpty(list) || block == null) {
+	    if (isEmpty() || block == null) {
 		return this;
 	    }
 	    for (int index = 0; index < list.size(); index++) {
@@ -299,7 +299,7 @@ public final class JvQuery {
 
 	public final <R> ListQuery<R> map(MapBlock<T, R> block) {
 	    List<R> result = jvQuery.list();
-	    if (jvQuery.isEmpty(list) || block == null) {
+	    if (isEmpty() || block == null) {
 		return jvQuery(result);
 	    }
 	    for (T t : list) {
@@ -310,7 +310,7 @@ public final class JvQuery {
 
 	public final <R> ListQuery<R> map(MapWithIndexBlock<T, R> conv) {
 	    List<R> result = jvQuery.list();
-	    if (jvQuery.isEmpty(list) || conv == null) {
+	    if (isEmpty() || conv == null) {
 		return jvQuery(result);
 	    }
 	    for (int index = 0; index < list.size(); index++) {
@@ -321,7 +321,7 @@ public final class JvQuery {
 	}
 
 	public final ListQuery<T> filter(FilterBlock<T> block) {
-	    if (jvQuery.isEmpty(list) || block == null) {
+	    if (isEmpty() || block == null) {
 		return this;
 	    }
 	    List<T> result = jvQuery.list();
@@ -335,7 +335,7 @@ public final class JvQuery {
 	}
 
 	public final ListQuery<T> filter(FilterWithIndexBlock<T> block) {
-	    if (jvQuery.isEmpty(list) || block == null) {
+	    if (isEmpty() || block == null) {
 		return this;
 	    }
 	    List<T> result = jvQuery.list();
@@ -350,7 +350,7 @@ public final class JvQuery {
 	}
 
 	public final ListQuery<T> filter(Filter filter) {
-	    if (jvQuery.isEmpty(list) || filter == null || filter.getFilter() == null) {
+	    if (isEmpty() || filter == null || filter.getFilter() == null) {
 		return this;
 	    }
 	    FilterWithIndexBlock<T> fil = filter.getFilter();
@@ -387,7 +387,7 @@ public final class JvQuery {
 	 * @return 結果
 	 */
 	public final <R> ListQuery<R> foldLeft(R init, FoldBlock<T, R> block) {
-	    if (jvQuery.isEmpty(list) || block == null) {
+	    if (isEmpty() || block == null) {
 		List<R> resultList = jvQuery.list();
 		return jvQuery(resultList);
 	    }
@@ -429,7 +429,7 @@ public final class JvQuery {
 	 * @return 結果
 	 */
 	public final <R> ListQuery<R> foldRight(R init, FoldBlock<T, R> block) {
-	    if (jvQuery.isEmpty(list) || block == null) {
+	    if (isEmpty() || block == null) {
 		List<R> resultList = jvQuery.list();
 		return jvQuery(resultList);
 	    }
@@ -487,7 +487,7 @@ public final class JvQuery {
 	}
 	
 	public final ListQuery<T> sort(Comparator<? super T> cmp) {
-	    if (jvQuery.isEmpty(list) || cmp == null) {
+	    if (isEmpty() || cmp == null) {
 		return this;
 	    }
 	    List<T> newList = jvQuery.list();
@@ -497,7 +497,7 @@ public final class JvQuery {
 	}
 
 	public final List<T> get() {
-	    if (jvQuery.isEmpty(list)) {
+	    if (isEmpty()) {
 		return jvQuery.list();
 	    }
 	    return list;
