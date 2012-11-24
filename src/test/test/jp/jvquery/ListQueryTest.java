@@ -551,7 +551,8 @@ public class ListQueryTest {
     
     @Test
     public void getAllのテスト() {
-	assertThat($(null).getAll(), is($.list()));
+	List<Object> nullList = null;
+	assertThat($(nullList).getAll(), is($.list()));
 	assertThat($($.list()).getAll(), is($.list()));
 	assertThat($($.list(1)).getAll(), is($.list(1)));
 	assertThat($($.list(1, 2)).getAll(), is($.list(1, 2)));
@@ -560,10 +561,11 @@ public class ListQueryTest {
 
     @Test
     public void getのテスト() {
-	assertThat($(null).get(-1), is(nullValue()));
-	assertThat($(null).get(0), is(nullValue()));
-	assertThat("#get(0)と同じ", $(null).get(), is(nullValue()));
-	assertThat($(null).get(1), is(nullValue()));
+	List<Object> nullList = null;
+	assertThat($(nullList).get(-1), is(nullValue()));
+	assertThat($(nullList).get(0), is(nullValue()));
+	assertThat("#get(0)と同じ", $(nullList).get(), is(nullValue()));
+	assertThat($(nullList).get(1), is(nullValue()));
 
 	assertThat($($.list()).get(-1), is(nullValue()));
 	assertThat($($.list()).get(0), is(nullValue()));
@@ -591,10 +593,11 @@ public class ListQueryTest {
 
     @Test
     public void getOptionのテスト() {
-	assertThat($(null).getOption(-1).hasValue(), is(false));
-	assertThat($(null).getOption(0).hasValue(), is(false));
-	assertThat("#getOption(0)と同じ", $(null).getOption().hasValue(), is(false));
-	assertThat($(null).getOption(1).hasValue(), is(false));
+	List<Object> nullList = null;
+	assertThat($(nullList).getOption(-1).hasValue(), is(false));
+	assertThat($(nullList).getOption(0).hasValue(), is(false));
+	assertThat("#getOption(0)と同じ", $(nullList).getOption().hasValue(), is(false));
+	assertThat($(nullList).getOption(1).hasValue(), is(false));
 
 	assertThat($($.list()).getOption(-1).hasValue(), is(false));
 	assertThat($($.list()).getOption(0).hasValue(), is(false));

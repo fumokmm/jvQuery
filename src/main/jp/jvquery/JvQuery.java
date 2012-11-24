@@ -29,12 +29,30 @@ public final class JvQuery {
     }
 
     /**
+     * 文字列を引数としてクエリを生成します。
+     * @param str 文字列
+     * @return クエリ
+     */
+    public static final StringQuery jvQuery(String str) {
+	return new StringQuery(str);
+    }
+
+    /**
      * リストを引数としてクエリを生成します。
      * @param list リスト
      * @return クエリ
      */
     public static final <T> ListQuery<T> $(List<T> list) {
 	return JvQuery.jvQuery(list);
+    }
+
+    /**
+     * 文字列を引数としてクエリを生成します。
+     * @param str 文字列
+     * @return クエリ
+     */
+    public static final StringQuery $(String str) {
+	return JvQuery.jvQuery(str);
     }
 
     // ---------------------------------------------------
@@ -103,12 +121,30 @@ public final class JvQuery {
     }
     
     /**
+     * 文字列のサイズ(文字数)を取得します。
+     * @param str 文字列
+     * @return 文字列のサイズ(文字数)
+     */
+    public final int size(String str) {
+	return str == null ? 0 : str.length();
+    }
+
+    /**
      * リストが空かどうか判定します。
      * @param list リスト
      * @return 空の場合true, でなければfalse
      */
     public final boolean isEmpty(List<?> list) {
 	return size(list) < 1;
+    }
+
+    /**
+     * 文字列が空かどうか判定します。
+     * @param str 文字列
+     * @return null, または空文字の場合true, でなければfalse
+     */
+    public final boolean isEmpty(String str) {
+	return size(str) < 1;
     }
 
     /**
@@ -281,7 +317,7 @@ public final class JvQuery {
 	 * @return 要素（取得できなかった場合、null）
 	 */
 	public final ITEM get() {
-	    return first().get(0);
+	    return get(0);
 	}
 	
 	/**
@@ -310,50 +346,12 @@ public final class JvQuery {
 	public final Option<ITEM> getOption(int index) {
 	    return jvQuery.option(get(index));
 	}
-
-	/**
-	 * 指定したインデックスの要素のみを抽出します。
-	 * インデックスが範囲外の場合、空となります。
-	 * @param index インデックス
-	 * @return クエリオブジェクト
-	 */
-	public abstract ListQuery<ITEM> eq(int index);
-
-	/**
-	 * 指定したインデックスよりも大きな要素を抽出します。
-	 * @param index インデックス
-	 * @return クエリオブジェクト
-	 */
-	public abstract ListQuery<ITEM> lt(int index);
-
-	/**
-	 * 指定したインデックスよりも小さな要素を抽出します。
-	 * @param index インデックス
-	 * @return クエリオブジェクト
-	 */
-	public abstract ListQuery<ITEM> gt(int index);
-	
-	/**
-	 * 最初の要素を抽出します。
-	 * @return クエリオブジェクト
-	 */
-	public final ListQuery<ITEM> first() {
-	    return eq(0);
-	}
-
-	/**
-	 * 最後の要素を抽出します。
-	 * @return クエリオブジェクト
-	 */
-	public final ListQuery<ITEM> last() {
-	    return eq(size() - 1);
-	}
     }
 
     /**
      * リストのQuery
-     * @param <T> リストの内容の型
      * @author fumokmm
+     * @param <T> リストの内容の型
      */
     public static final class ListQuery<T> extends AbstractQuery<List<T>, T> {
 	private List<T> list;
@@ -600,7 +598,12 @@ public final class JvQuery {
 	    return jvQuery.size(list);
 	}
 
-	@Override
+	/**
+	 * 指定したインデックスの要素のみを抽出します。
+	 * インデックスが範囲外の場合、空となります。
+	 * @param index インデックス
+	 * @return クエリオブジェクト
+	 */
 	public final ListQuery<T> eq(int index) {
 	    Option<T> resultItem = getOption(index);
 	    if (resultItem.hasValue()) {
@@ -613,7 +616,11 @@ public final class JvQuery {
 	    }
 	}
 
-	@Override
+	/**
+	 * 指定したインデックスよりも大きな要素を抽出します。
+	 * @param index インデックス
+	 * @return クエリオブジェクト
+	 */
 	public final ListQuery<T> lt(int index) {
 	    final int idx = index;
 	    return filter(new FilterWithIndexBlock<T>(){
@@ -624,7 +631,11 @@ public final class JvQuery {
 	    });
 	}
 
-	@Override
+	/**
+	 * 指定したインデックスよりも小さな要素を抽出します。
+	 * @param index インデックス
+	 * @return クエリオブジェクト
+	 */
 	public final ListQuery<T> gt(int index) {
 	    final int idx = index;
 	    return filter(new FilterWithIndexBlock<T>(){
@@ -633,6 +644,57 @@ public final class JvQuery {
 		    return tIdx > idx;
 		}
 	    });
+	}
+
+	/**
+	 * 最初の要素を抽出します。
+	 * @return クエリオブジェクト
+	 */
+	public final ListQuery<T> first() {
+	    return eq(0);
+	}
+
+	/**
+	 * 最後の要素を抽出します。
+	 * @return クエリオブジェクト
+	 */
+	public final ListQuery<T> last() {
+	    return eq(size() - 1);
+	}
+    }
+    
+    /**
+     * 文字列のQuery
+     * @author fumokmm
+     */
+    public static final class StringQuery extends AbstractQuery<String, String> {
+
+	private String str;
+	
+	private StringQuery(String str) {
+	    this.str = str;
+	}
+	
+	@Override
+	public int size() {
+	    return jvQuery.size(str);
+	}
+
+	@Override
+	public String getAll() {
+	    if (isEmpty()) {
+		return "";
+	    }
+	    return str;
+	}
+
+	@Override
+	public String get(int index) {
+	    // 空 もしくは indexがサイズを超えている場合は唐文字を返却
+	    if (isEmpty() || index - 1 > size()) {
+		return "";
+	    }
+	    return String.valueOf(str.charAt(index));
 	}
     }
     
