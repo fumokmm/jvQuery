@@ -333,7 +333,7 @@ public final class JvQuery {
 	 * 
 	 * @return 要素（オプション型）
 	 */
-	public final Option<ITEM> getOption() {
+	public Option<ITEM> getOption() {
 	    return jvQuery.option(get());
 	}
 	
@@ -343,7 +343,7 @@ public final class JvQuery {
 	 * @param index インデックス
 	 * @return 要素（オプション型）
 	 */
-	public final Option<ITEM> getOption(int index) {
+	public Option<ITEM> getOption(int index) {
 	    return jvQuery.option(get(index));
 	}
     }
@@ -680,6 +680,10 @@ public final class JvQuery {
 	    return jvQuery.size(str);
 	}
 
+	/**
+	 * 要素をすべて取得します。
+	 * @return すべての要素
+	 */
 	@Override
 	public String getAll() {
 	    if (isEmpty()) {
@@ -688,13 +692,41 @@ public final class JvQuery {
 	    return str;
 	}
 
+	/**
+	 * 要素を取得します。（指定したインデックス）
+	 * 
+	 * @param index インデックス
+	 * @return 要素（取得できなかった場合、空文字）
+	 */
 	@Override
 	public String get(int index) {
-	    // 空 もしくは indexがサイズを超えている場合は唐文字を返却
-	    if (isEmpty() || index - 1 > size()) {
-		return "";
-	    }
-	    return String.valueOf(str.charAt(index));
+	    return 0 <= index && index < size() ?
+	        String.valueOf(str.charAt(index)) : "";
+	}
+
+	/**
+	 * 要素をオプション型で取得します。（最初のもの）
+	 * 要素が空文字だった場合、Noneとして返却されます。
+	 * 
+	 * @return 要素（オプション型）
+	 */
+	@Override
+	public Option<String> getOption() {
+	    String str = get();
+	    return jvQuery.option(str.equals("") ? null : str);
+	}
+	
+	/**
+	 * 要素をオプション型で取得します。（指定したインデックス）
+	 * 要素が空文字だった場合、Noneとして返却されます。
+	 * 
+	 * @param index インデックス
+	 * @return 要素（オプション型）
+	 */
+	@Override
+	public Option<String> getOption(int index) {
+	    String str = get(index);
+	    return jvQuery.option(str.equals("") ? null : str);
 	}
     }
     
