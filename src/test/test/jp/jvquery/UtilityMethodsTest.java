@@ -32,7 +32,38 @@ public class UtilityMethodsTest {
     }
 
     @Test
-    public void $sizeTest() {
+    public void $nthのテスト_List() {
+	List<Integer> list = $.range(1, 3);
+	assertThat($.nth(list, -1), is(nullValue()));
+	assertThat($.nth(list, 0), is(1));
+	assertThat($.nth(list, 1), is(2));
+	assertThat($.nth(list, 2), is(3));
+	assertThat($.nth(list, 3), is(nullValue()));
+    }
+    
+    @Test
+    public void $nthのテスト_Array() {
+	// TODO ↓ できれば$.array()の戻り値はプリミティブ型にしたい気もする・・・
+	Integer[] array = $.array(1, 2, 3);
+	assertThat($.nth(array, -1), is(nullValue()));
+	assertThat($.nth(array, 0), is(1));
+	assertThat($.nth(array, 1), is(2));
+	assertThat($.nth(array, 2), is(3));
+	assertThat($.nth(array, 3), is(nullValue()));
+    }
+
+    @Test
+    public void $nthのテスト_String() {
+	String str = "abc";
+	assertThat($.nth(str, -1), is(""));
+	assertThat($.nth(str, 0), is("a"));
+	assertThat($.nth(str, 1), is("b"));
+	assertThat($.nth(str, 2), is("c"));
+	assertThat($.nth(str, 3), is(""));
+    }
+
+    @Test
+    public void $sizeのテスト_List() {
 	List<String> list = new ArrayList<String>();
 	list.add("a");
 	list.add("b");
@@ -41,13 +72,13 @@ public class UtilityMethodsTest {
     }
 
     @Test
-    public void $sizeTest_Empty() {
+    public void $sizeのテスト_List_Empty() {
 	List<String> list = new ArrayList<String>();
 	assertThat($.size(list), is(0));
     }
 
     @Test
-    public void $sizeTest_Null() {
+    public void $sizeのテスト_List_Null() {
 	List<String> list = null;
 	assertThat($.size(list), is(0));
     }

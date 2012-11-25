@@ -18,7 +18,7 @@ public class ListQueryTest {
 
     @Test
     public void eachのテスト() {
-	List<Integer> nums = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+	List<Integer> nums = $.list(1, 10);
 	final int[] num = new int[]{ 0 };
 	$(nums).each(new EachBlock<Integer>(){
 	    @Override
@@ -59,7 +59,7 @@ public class ListQueryTest {
     
     @Test
     public void eachのテスト_NullBlock() {
-        List<Integer> nums = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        List<Integer> nums = $.list(1, 10);
         final int[] num = new int[]{ 0 };
         EachBlock<Integer> block = null;
         $(nums).each(block);

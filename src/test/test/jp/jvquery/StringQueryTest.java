@@ -5,10 +5,6 @@ import static org.junit.Assert.*;
 
 import java.util.*;
 
-import jp.jvquery.JvQuery.EachBlock;
-import jp.jvquery.JvQuery.FilterBlock;
-import jp.jvquery.JvQuery.FoldBlock;
-import jp.jvquery.JvQuery.MapBlock;
 import jp.jvquery.JvQuery.*;
 
 import static jp.jvquery.JvQuery.*;
@@ -110,4 +106,55 @@ public class StringQueryTest {
 	assertThat($("abc").getOption(2).get(), is("c"));
 	assertThat($("abc").getOption(3).hasValue(), is(false));
     }
+
+    @Test
+    public void eachのテスト() {
+	String strs = "12345";
+	final int[] num = new int[]{ 0 };
+	$(strs).each(new EachBlock<String>(){
+	    @Override
+	    public void call(String a1) {
+		num[0] += Integer.parseInt(a1);
+	    }
+	});
+	assertThat(num[0], is(15));
+    }
+    
+    @Test
+    public void eachのテスト_Empty() {
+	String strs = "";
+	final int[] num = new int[]{ 0 };
+	// ループしない
+	$(strs).each(new EachBlock<String>(){
+	    @Override
+	    public void call(String a1) {
+		num[0] += Integer.parseInt(a1);
+	    }
+	});
+	assertThat(num[0], is(0));
+    }
+
+    @Test
+    public void eachのテスト_Null() {
+	String strs = null;
+	final int[] num = new int[]{ 0 };
+	// ループしない
+	$(strs).each(new EachBlock<String>(){
+	    @Override
+	    public void call(String a1) {
+		num[0] += Integer.parseInt(a1);
+	    }
+	});
+	assertThat(num[0], is(0));
+    }
+    
+    @Test
+    public void eachのテスト_NullBlock() {
+	String strs = "12345";
+        final int[] num = new int[]{ 0 };
+        EachBlock<String> block = null;
+        $(strs).each(block);
+        assertThat(num[0], is(0));
+    }
+
 }

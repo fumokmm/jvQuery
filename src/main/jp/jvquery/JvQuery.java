@@ -103,14 +103,54 @@ public final class JvQuery {
         return ts;
     }
 
+    /**
+     * リストからインデックスを指定して要素を取得します。
+     * 要素が取得できなかった場合、nullが返却されます。
+     * 
+     * @param list リスト
+     * @param index インデックス
+     * @return 要素
+     */
     public final <T> T nth(List<T> list, int index) {
+	int size = size(list);
+	if (! (0 <= index && index < size)) {
+	    return null;
+	}
 	return list.get(index);
     }
 
+    /**
+     * 配列からインデックスを指定して要素を取得します。
+     * 要素が取得できなかった場合、nullが返却されます。
+     * 
+     * @param array 配列
+     * @param index インデックス
+     * @return 要素
+     */
     public final <T> T nth(T[] array, int index) {
-	return array[index];
+        int size = size(array);
+        if (! (0 <= index && index < size)) {
+            return null;
+        }
+        return array[index];
     }
-    
+
+    /**
+     * 文字列からインデックスを指定して文字列を取得します。
+     * 文字列が取得できなかった場合、空文字が返却されます。
+     * 
+     * @param str 文字列
+     * @param index インデックス
+     * @return 文字列
+     */
+    public final String nth(String str, int index) {
+	int size = size(str);
+	if (! (0 <= index && index < size)) {
+	    return "";
+	}
+	return String.valueOf(str.charAt(index));
+    }
+
     /**
      * リストのサイズを取得します。
      * @param list リスト
@@ -120,6 +160,15 @@ public final class JvQuery {
 	return list == null ? 0 : list.size();
     }
     
+    /**
+     * 配列のサイズを取得します。
+     * @param array 配列
+     * @return 配列のサイズ
+     */
+    public final <T> int size(T[] array) {
+        return array == null ? 0 : array.length;
+    }
+
     /**
      * 文字列のサイズ(文字数)を取得します。
      * @param str 文字列
@@ -136,6 +185,15 @@ public final class JvQuery {
      */
     public final boolean isEmpty(List<?> list) {
 	return size(list) < 1;
+    }
+
+    /**
+     * 配列が空かどうか判定します。
+     * @param array 配列
+     * @return 空の場合true, でなければfalse
+     */
+    public final <T> boolean isEmpty(T[] array) {
+	return size(array) < 1;
     }
 
     /**
@@ -727,6 +785,29 @@ public final class JvQuery {
 	public Option<String> getOption(int index) {
 	    String str = get(index);
 	    return jvQuery.option(str.equals("") ? null : str);
+	}
+
+	public final StringQuery each(EachBlock<String> block) {
+	    if (isEmpty() || block == null) {
+		return this;
+	    }
+	    for (char c : str.toCharArray()) {
+		String s = String.valueOf(c);
+		block.call(s);
+	    }
+	    return this;
+	}
+
+	public final StringQuery each(EachWithIndexBlock<String> block) {
+	    if (isEmpty() || block == null) {
+		return this;
+	    }
+	    char[] cs = str.toCharArray();
+	    for (int index = 0; index < cs.length; index++) {
+		String s = String.valueOf(cs[index]);
+		block.call(s, index);
+	    }
+	    return this;
 	}
     }
     
